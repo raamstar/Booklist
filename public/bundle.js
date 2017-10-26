@@ -11983,15 +11983,15 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 function booksReducers() {
   var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
     books: [{
-      id: 1,
+      _id: 1,
       title: "First Book",
       description: "2nd edition",
-      price: "22$"
+      price: "22"
     }, {
-      id: 2,
+      _id: 2,
       title: "second Book",
       description: "3rd edition",
-      price: "24$"
+      price: "24"
     }] };
   var action = arguments[1];
 
@@ -12010,7 +12010,7 @@ function booksReducers() {
       //create copy of current books
       var currentBooktoDelete = [].concat(_toConsumableArray(state.books));
       var indexToDelete = currentBooktoDelete.findIndex(function (book) {
-        return book.id === action.payload.id;
+        return book._id === action.payload._id;
       });
       return { books: [].concat(_toConsumableArray(currentBooktoDelete.slice(0, indexToDelete)), _toConsumableArray(currentBooktoDelete.slice(indexToDelete + 1))) };
       break;
@@ -12019,7 +12019,7 @@ function booksReducers() {
       //create copy of current books
       var currentBookToUpdate = [].concat(_toConsumableArray(state.books));
       var indexToUpdate = currentBookToUpdate.findIndex(function (book) {
-        return book.id === action.payload.id;
+        return book._id === action.payload._id;
       });
       ///create new book object with new title and same array index
       var newBookToUpdate = _extends({}, currentBookToUpdate[indexToUpdate], {
@@ -12051,7 +12051,7 @@ function cartReducers() {
 
   switch (action.type) {
     case "ADD_TO_CART":
-      return { cart: [].concat(_toConsumableArray(state.cart), _toConsumableArray(action.payload)) };
+      return { cart: [].concat(_toConsumableArray(state), _toConsumableArray(action.payload)) };
       break;
   }
   return state;
@@ -24228,6 +24228,10 @@ var _booksForm = __webpack_require__(501);
 
 var _booksForm2 = _interopRequireDefault(_booksForm);
 
+var _cart = __webpack_require__(512);
+
+var _cart2 = _interopRequireDefault(_cart);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -24257,9 +24261,9 @@ var Bookslist = function (_React$Component) {
       var booklist = this.props.books.map(function (BookArr) {
         return _react2.default.createElement(
           _Col2.default,
-          { xs: 12, sm: 6, md: 4 },
+          { xs: 12, sm: 6, md: 4, key: BookArr._id },
           _react2.default.createElement(_bookItems2.default, {
-            id: BookArr.id,
+            _id: BookArr._id,
             title: BookArr.title,
             description: BookArr.description,
             price: BookArr.price })
@@ -24268,6 +24272,11 @@ var Bookslist = function (_React$Component) {
       return _react2.default.createElement(
         _Grid2.default,
         null,
+        _react2.default.createElement(
+          _Row2.default,
+          null,
+          _react2.default.createElement(_cart2.default, null)
+        ),
         _react2.default.createElement(
           _Row2.default,
           null,
@@ -25709,7 +25718,54 @@ function createChainableTypeChecker(validate) {
 module.exports = exports['default'];
 
 /***/ }),
-/* 270 */,
+/* 270 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = all;
+
+var _createChainableTypeChecker = __webpack_require__(269);
+
+var _createChainableTypeChecker2 = _interopRequireDefault(_createChainableTypeChecker);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function all() {
+  for (var _len = arguments.length, validators = Array(_len), _key = 0; _key < _len; _key++) {
+    validators[_key] = arguments[_key];
+  }
+
+  function allPropTypes() {
+    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      args[_key2] = arguments[_key2];
+    }
+
+    var error = null;
+
+    validators.forEach(function (validator) {
+      if (error != null) {
+        return;
+      }
+
+      var result = validator.apply(undefined, args);
+      if (result != null) {
+        error = result;
+      }
+    });
+
+    return error;
+  }
+
+  return (0, _createChainableTypeChecker2.default)(allPropTypes);
+}
+module.exports = exports['default'];
+
+/***/ }),
 /* 271 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -29107,7 +29163,15 @@ var _Well = __webpack_require__(499);
 
 var _Well2 = _interopRequireDefault(_Well);
 
+var _reactRedux = __webpack_require__(92);
+
+var _cartActions = __webpack_require__(117);
+
+var _redux = __webpack_require__(24);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -29115,16 +29179,27 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var bookItems = function (_React$Component) {
-  _inherits(bookItems, _React$Component);
+var bookItem = function (_React$Component) {
+  _inherits(bookItem, _React$Component);
 
-  function bookItems() {
-    _classCallCheck(this, bookItems);
+  function bookItem() {
+    _classCallCheck(this, bookItem);
 
-    return _possibleConstructorReturn(this, (bookItems.__proto__ || Object.getPrototypeOf(bookItems)).apply(this, arguments));
+    return _possibleConstructorReturn(this, (bookItem.__proto__ || Object.getPrototypeOf(bookItem)).apply(this, arguments));
   }
 
-  _createClass(bookItems, [{
+  _createClass(bookItem, [{
+    key: 'handleCart',
+    value: function handleCart() {
+      var book = [].concat(_toConsumableArray(this.props.cart), [{
+        _id: this.props._id,
+        title: this.props.title,
+        description: this.props.description,
+        price: this.props.price
+      }]);
+      this.props.addToCart(book);
+    }
+  }, {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
@@ -29150,11 +29225,12 @@ var bookItems = function (_React$Component) {
               'h3',
               null,
               'USD:',
-              this.props.price
+              this.props.price,
+              '$'
             ),
             _react2.default.createElement(
               _Button2.default,
-              { bsStyle: 'primary' },
+              { onClick: this.handleCart.bind(this), bsStyle: 'primary' },
               'Buy Now'
             )
           )
@@ -29163,10 +29239,20 @@ var bookItems = function (_React$Component) {
     }
   }]);
 
-  return bookItems;
+  return bookItem;
 }(_react2.default.Component);
 
-exports.default = bookItems;
+function mapStateToProps(state) {
+  return {
+    cart: state.cart.cart
+  };
+}
+function mapDispatchToProps(dispatch) {
+  return (0, _redux.bindActionCreators)({
+    addToCart: _cartActions.addToCart
+  }, dispatch);
+}
+exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(bookItem);
 
 /***/ }),
 /* 501 */
@@ -30754,6 +30840,389 @@ exports.default = {
   some: some,
   toArray: toArray
 };
+module.exports = exports['default'];
+
+/***/ }),
+/* 512 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(33);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = __webpack_require__(92);
+
+var _Panel = __webpack_require__(502);
+
+var _Panel2 = _interopRequireDefault(_Panel);
+
+var _Button = __webpack_require__(491);
+
+var _Button2 = _interopRequireDefault(_Button);
+
+var _Row = __webpack_require__(496);
+
+var _Row2 = _interopRequireDefault(_Row);
+
+var _Col = __webpack_require__(497);
+
+var _Col2 = _interopRequireDefault(_Col);
+
+var _Well = __webpack_require__(499);
+
+var _Well2 = _interopRequireDefault(_Well);
+
+var _Label = __webpack_require__(513);
+
+var _Label2 = _interopRequireDefault(_Label);
+
+var _ButtonGroup = __webpack_require__(514);
+
+var _ButtonGroup2 = _interopRequireDefault(_ButtonGroup);
+
+var _redux = __webpack_require__(24);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Cart = function (_React$Component) {
+  _inherits(Cart, _React$Component);
+
+  function Cart() {
+    _classCallCheck(this, Cart);
+
+    return _possibleConstructorReturn(this, (Cart.__proto__ || Object.getPrototypeOf(Cart)).apply(this, arguments));
+  }
+
+  _createClass(Cart, [{
+    key: 'render',
+    value: function render() {
+      if (this.props.cart[0]) {
+        return this.renderCart();
+      } else {
+        return this.emptyCart();
+      }
+    }
+  }, {
+    key: 'emptyCart',
+    value: function emptyCart() {
+      return _react2.default.createElement('div', null);
+    }
+  }, {
+    key: 'renderCart',
+    value: function renderCart() {
+      var cartItemsList = this.props.cart.map(function (cartArr) {
+        return _react2.default.createElement(
+          _Panel2.default,
+          {
+            key: cartArr._id
+          },
+          _react2.default.createElement(
+            _Row2.default,
+            null,
+            _react2.default.createElement(
+              _Col2.default,
+              { xs: 12, sm: 4 },
+              _react2.default.createElement(
+                'h6',
+                null,
+                cartArr.title
+              ),
+              _react2.default.createElement(
+                'h6',
+                null,
+                'price:',
+                cartArr.price,
+                '$'
+              )
+            ),
+            _react2.default.createElement(
+              _Col2.default,
+              { xs: 12, sm: 2 },
+              _react2.default.createElement(
+                'h6',
+                null,
+                'qty. ',
+                _react2.default.createElement(_Label2.default, { bsStyle: 'success' })
+              )
+            ),
+            _react2.default.createElement(
+              _Col2.default,
+              { xs: 6, sm: 4 },
+              _react2.default.createElement(
+                _ButtonGroup2.default,
+                { style: { minWidth: '300px' } },
+                _react2.default.createElement(
+                  _Button2.default,
+                  { bsStyle: 'default', bsSize: 'small' },
+                  '_'
+                ),
+                _react2.default.createElement(
+                  _Button2.default,
+                  { bsStyle: 'default', bsSize: 'small' },
+                  '+'
+                ),
+                _react2.default.createElement('span', null),
+                _react2.default.createElement(
+                  _Button2.default,
+                  { bsStyle: 'danger', bsSize: 'small' },
+                  'Delete'
+                )
+              )
+            )
+          )
+        );
+      });
+      return _react2.default.createElement(
+        _Panel2.default,
+        { header: 'Cart', bsStyle: 'primary' },
+        cartItemsList
+      );
+    }
+  }]);
+
+  return Cart;
+}(_react2.default.Component);
+
+function mapStateToProps(state) {
+  return {
+    cart: state.cart.cart
+  };
+}
+// function mapDispatchToProps(dispatch){
+//   return bindActionCreators({
+//     addToCart:addToCart
+//   },dispatch)
+// }
+
+exports.default = (0, _reactRedux.connect)(mapStateToProps)(Cart);
+
+/***/ }),
+/* 513 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+
+var _values = __webpack_require__(257);
+
+var _values2 = _interopRequireDefault(_values);
+
+var _extends2 = __webpack_require__(235);
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _objectWithoutProperties2 = __webpack_require__(236);
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
+var _classCallCheck2 = __webpack_require__(232);
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _possibleConstructorReturn2 = __webpack_require__(233);
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = __webpack_require__(234);
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _classnames = __webpack_require__(237);
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _react = __webpack_require__(33);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _bootstrapUtils = __webpack_require__(492);
+
+var _StyleConfig = __webpack_require__(490);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Label = function (_React$Component) {
+  (0, _inherits3.default)(Label, _React$Component);
+
+  function Label() {
+    (0, _classCallCheck3.default)(this, Label);
+    return (0, _possibleConstructorReturn3.default)(this, _React$Component.apply(this, arguments));
+  }
+
+  Label.prototype.hasContent = function hasContent(children) {
+    var result = false;
+
+    _react2.default.Children.forEach(children, function (child) {
+      if (result) {
+        return;
+      }
+
+      if (child || child === 0) {
+        result = true;
+      }
+    });
+
+    return result;
+  };
+
+  Label.prototype.render = function render() {
+    var _props = this.props,
+        className = _props.className,
+        children = _props.children,
+        props = (0, _objectWithoutProperties3.default)(_props, ['className', 'children']);
+
+    var _splitBsProps = (0, _bootstrapUtils.splitBsProps)(props),
+        bsProps = _splitBsProps[0],
+        elementProps = _splitBsProps[1];
+
+    var classes = (0, _extends3.default)({}, (0, _bootstrapUtils.getClassSet)(bsProps), {
+
+      // Hack for collapsing on IE8.
+      hidden: !this.hasContent(children)
+    });
+
+    return _react2.default.createElement(
+      'span',
+      (0, _extends3.default)({}, elementProps, {
+        className: (0, _classnames2.default)(className, classes)
+      }),
+      children
+    );
+  };
+
+  return Label;
+}(_react2.default.Component);
+
+exports.default = (0, _bootstrapUtils.bsClass)('label', (0, _bootstrapUtils.bsStyles)([].concat((0, _values2.default)(_StyleConfig.State), [_StyleConfig.Style.DEFAULT, _StyleConfig.Style.PRIMARY]), _StyleConfig.Style.DEFAULT, Label));
+module.exports = exports['default'];
+
+/***/ }),
+/* 514 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+
+var _extends3 = __webpack_require__(235);
+
+var _extends4 = _interopRequireDefault(_extends3);
+
+var _objectWithoutProperties2 = __webpack_require__(236);
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
+var _classCallCheck2 = __webpack_require__(232);
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _possibleConstructorReturn2 = __webpack_require__(233);
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = __webpack_require__(234);
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _classnames = __webpack_require__(237);
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _react = __webpack_require__(33);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(93);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _all = __webpack_require__(270);
+
+var _all2 = _interopRequireDefault(_all);
+
+var _Button = __webpack_require__(491);
+
+var _Button2 = _interopRequireDefault(_Button);
+
+var _bootstrapUtils = __webpack_require__(492);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var propTypes = {
+  vertical: _propTypes2.default.bool,
+  justified: _propTypes2.default.bool,
+
+  /**
+   * Display block buttons; only useful when used with the "vertical" prop.
+   * @type {bool}
+   */
+  block: (0, _all2.default)(_propTypes2.default.bool, function (_ref) {
+    var block = _ref.block,
+        vertical = _ref.vertical;
+    return block && !vertical ? new Error('`block` requires `vertical` to be set to have any effect') : null;
+  })
+};
+
+var defaultProps = {
+  block: false,
+  justified: false,
+  vertical: false
+};
+
+var ButtonGroup = function (_React$Component) {
+  (0, _inherits3.default)(ButtonGroup, _React$Component);
+
+  function ButtonGroup() {
+    (0, _classCallCheck3.default)(this, ButtonGroup);
+    return (0, _possibleConstructorReturn3.default)(this, _React$Component.apply(this, arguments));
+  }
+
+  ButtonGroup.prototype.render = function render() {
+    var _extends2;
+
+    var _props = this.props,
+        block = _props.block,
+        justified = _props.justified,
+        vertical = _props.vertical,
+        className = _props.className,
+        props = (0, _objectWithoutProperties3.default)(_props, ['block', 'justified', 'vertical', 'className']);
+
+    var _splitBsProps = (0, _bootstrapUtils.splitBsProps)(props),
+        bsProps = _splitBsProps[0],
+        elementProps = _splitBsProps[1];
+
+    var classes = (0, _extends4.default)({}, (0, _bootstrapUtils.getClassSet)(bsProps), (_extends2 = {}, _extends2[(0, _bootstrapUtils.prefix)(bsProps)] = !vertical, _extends2[(0, _bootstrapUtils.prefix)(bsProps, 'vertical')] = vertical, _extends2[(0, _bootstrapUtils.prefix)(bsProps, 'justified')] = justified, _extends2[(0, _bootstrapUtils.prefix)(_Button2.default.defaultProps, 'block')] = block, _extends2));
+
+    return _react2.default.createElement('div', (0, _extends4.default)({}, elementProps, {
+      className: (0, _classnames2.default)(className, classes)
+    }));
+  };
+
+  return ButtonGroup;
+}(_react2.default.Component);
+
+ButtonGroup.propTypes = propTypes;
+ButtonGroup.defaultProps = defaultProps;
+
+exports.default = (0, _bootstrapUtils.bsClass)('btn-group', ButtonGroup);
 module.exports = exports['default'];
 
 /***/ })
