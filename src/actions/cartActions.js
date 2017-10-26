@@ -11,6 +11,14 @@ export function deleteCartItem(cart){
     payload: cart
   }
 }
+
+export function updateCartQuantity(_id, unit){
+  return {
+    type:'UPDATE_CART',
+    _id:_id,
+    unit:unit
+  }
+}
 //add one qty to cart
 // export function cartIncrement(book){
 //   return {

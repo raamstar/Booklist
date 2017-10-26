@@ -7,6 +7,8 @@ import Well from 'react-bootstrap/lib/Well';
 import {connect} from 'react-redux';
 import {addToCart} from '../actions/cartActions';
 import {bindActionCreators} from 'redux';
+import {updateCartQuantity} from "../actions/cartActions"
+
 
 class bookItem extends React.Component{
 
@@ -18,7 +20,26 @@ class bookItem extends React.Component{
       price: this.props.price,
       quantity: 1
     }]
-    this.props.addToCart(book)
+    //Check if cart is empty.
+
+    if (this.props.cart.length > 0){
+      //if cart is not empty, check if there are products with same _id.
+      let _id = this.props._id;
+      let cart_index= this.props.cart.findIndex(function(cart){
+        return (cart._id===_id)
+      })
+      //if there are no multiple same items in the cart, just add the product
+      if (cart_index === -1){
+        this.props.addToCart(book)
+      }else{
+        this.props.updateCartQuantity(_id, 1)
+        ///add +1 quantity if item already in the cart.
+      }
+    }
+    else{
+      //cart is empty, we can just add the book in the cart
+      this.props.addToCart(book)
+    }
   }
 
   render(){
@@ -43,7 +64,8 @@ function mapStateToProps(state){
 }
 function mapDispatchToProps(dispatch){
   return bindActionCreators({
-    addToCart:addToCart
+    addToCart:addToCart,
+    updateCartQuantity:updateCartQuantity
   },dispatch)
 }
 export default connect(mapStateToProps, mapDispatchToProps)(bookItem);

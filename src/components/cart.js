@@ -8,7 +8,7 @@ import Well from 'react-bootstrap/lib/Well';
 import Label from 'react-bootstrap/lib/Label'
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup'
 import {bindActionCreators} from 'redux';
-import {deleteCartItem} from "../actions/cartActions"
+import {deleteCartItem, updateCartQuantity } from "../actions/cartActions"
 
 class Cart extends React.Component{
 
@@ -43,6 +43,14 @@ class Cart extends React.Component{
   emptyCart(){
     return (<div></div>)
   }
+  IncreQuantity(_id){
+    this.props.updateCartQuantity(_id, 1)
+  }
+  DecreQuantity(_id, quantity){
+    if (quantity>1){
+      this.props.updateCartQuantity(_id, -1)
+    }
+  }
 
   renderCart(){
     const cartItemsList= this.props.cart.map(function(cartArr){
@@ -60,8 +68,8 @@ class Cart extends React.Component{
             </Col>
             <Col xs={6} sm={4}>
               <ButtonGroup style={{minWidth:'300px'}}>
-                <Button bsStyle="default" bsSize="small">_</Button>
-                <Button bsStyle="default" bsSize="small">+</Button>
+                <Button bsStyle="default" bsSize="small" onClick={this.DecreQuantity.bind(this,cartArr._id, cartArr.quantity)}>_</Button>
+                <Button bsStyle="default" bsSize="small" onClick={this.IncreQuantity.bind(this,cartArr._id)}>+</Button>
                 <span></span>
                 <Button onClick={this.onDelete.bind(this, cartArr._id)} bsStyle="danger" bsSize="small">Delete</Button>
               </ButtonGroup>
@@ -85,7 +93,8 @@ function mapStateToProps(state){
 }
 function mapDispatchToProps(dispatch){
   return bindActionCreators({
-    deleteCartItem:deleteCartItem
+    deleteCartItem:deleteCartItem,
+    updateCartQuantity:updateCartQuantity
     //OtherActions: xxxx
   }, dispatch)
 }

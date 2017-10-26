@@ -12045,6 +12045,9 @@ Object.defineProperty(exports, "__esModule", {
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 exports.cartReducers = cartReducers;
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function cartReducers() {
   var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { cart: [] };
   var action = arguments[1];
@@ -12056,6 +12059,19 @@ function cartReducers() {
 
     case "DELETE_CART_ITEM":
       return _extends({}, state, { cart: action.payload });
+      break;
+
+    case "UPDATE_CART":
+      var currentBookToUpdate = [].concat(_toConsumableArray(state.cart));
+      var indexToUpdate = currentBookToUpdate.findIndex(function (book) {
+        return book._id === action._id;
+      });
+      var newBookToUpdate = _extends({}, currentBookToUpdate[indexToUpdate], {
+        quantity: currentBookToUpdate[indexToUpdate].quantity + action.unit
+      });
+      var cartUpdate = [].concat(_toConsumableArray(currentBookToUpdate.slice(0, indexToUpdate)), [newBookToUpdate], _toConsumableArray(currentBookToUpdate.slice(indexToUpdate + 1)));
+
+      return _extends({}, state, { cart: cartUpdate });
       break;
   }
 
@@ -12074,6 +12090,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.addToCart = addToCart;
 exports.deleteCartItem = deleteCartItem;
+exports.updateCartQuantity = updateCartQuantity;
 function addToCart(book) {
   return {
     type: 'ADD_TO_CART',
@@ -12085,6 +12102,14 @@ function deleteCartItem(cart) {
   return {
     type: 'DELETE_CART_ITEM',
     payload: cart
+  };
+}
+
+function updateCartQuantity(_id, unit) {
+  return {
+    type: 'UPDATE_CART',
+    _id: _id,
+    unit: unit
   };
 }
 //add one qty to cart
@@ -29225,7 +29250,25 @@ var bookItem = function (_React$Component) {
         price: this.props.price,
         quantity: 1
       }]);
-      this.props.addToCart(book);
+      //Check if cart is empty.
+
+      if (this.props.cart.length > 0) {
+        //if cart is not empty, check if there are products with same _id.
+        var _id = this.props._id;
+        var cart_index = this.props.cart.findIndex(function (cart) {
+          return cart._id === _id;
+        });
+        //if there are no multiple same items in the cart, just add the product
+        if (cart_index === -1) {
+          this.props.addToCart(book);
+        } else {
+          this.props.updateCartQuantity(_id, 1);
+          ///add +1 quantity if item already in the cart.
+        }
+      } else {
+        //cart is empty, we can just add the book in the cart
+        this.props.addToCart(book);
+      }
     }
   }, {
     key: 'render',
@@ -29277,7 +29320,8 @@ function mapStateToProps(state) {
 }
 function mapDispatchToProps(dispatch) {
   return (0, _redux.bindActionCreators)({
-    addToCart: _cartActions.addToCart
+    addToCart: _cartActions.addToCart,
+    updateCartQuantity: _cartActions.updateCartQuantity
   }, dispatch);
 }
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(bookItem);
@@ -30971,6 +31015,18 @@ var Cart = function (_React$Component) {
       return _react2.default.createElement('div', null);
     }
   }, {
+    key: 'IncreQuantity',
+    value: function IncreQuantity(_id) {
+      this.props.updateCartQuantity(_id, 1);
+    }
+  }, {
+    key: 'DecreQuantity',
+    value: function DecreQuantity(_id, quantity) {
+      if (quantity > 1) {
+        this.props.updateCartQuantity(_id, -1);
+      }
+    }
+  }, {
     key: 'renderCart',
     value: function renderCart() {
       var cartItemsList = this.props.cart.map(function (cartArr) {
@@ -31020,12 +31076,12 @@ var Cart = function (_React$Component) {
                 { style: { minWidth: '300px' } },
                 _react2.default.createElement(
                   _Button2.default,
-                  { bsStyle: 'default', bsSize: 'small' },
+                  { bsStyle: 'default', bsSize: 'small', onClick: this.DecreQuantity.bind(this, cartArr._id, cartArr.quantity) },
                   '_'
                 ),
                 _react2.default.createElement(
                   _Button2.default,
-                  { bsStyle: 'default', bsSize: 'small' },
+                  { bsStyle: 'default', bsSize: 'small', onClick: this.IncreQuantity.bind(this, cartArr._id) },
                   '+'
                 ),
                 _react2.default.createElement('span', null),
@@ -31057,7 +31113,8 @@ function mapStateToProps(state) {
 }
 function mapDispatchToProps(dispatch) {
   return (0, _redux.bindActionCreators)({
-    deleteCartItem: _cartActions.deleteCartItem
+    deleteCartItem: _cartActions.deleteCartItem,
+    updateCartQuantity: _cartActions.updateCartQuantity
     //OtherActions: xxxx
   }, dispatch);
 }
