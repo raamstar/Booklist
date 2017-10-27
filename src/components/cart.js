@@ -7,10 +7,25 @@ import Col from 'react-bootstrap/lib/Col';
 import Well from 'react-bootstrap/lib/Well';
 import Label from 'react-bootstrap/lib/Label'
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup'
+import Modal from 'react-bootstrap/lib/Modal'
 import {bindActionCreators} from 'redux';
 import {deleteCartItem, updateCartQuantity } from "../actions/cartActions"
 
 class Cart extends React.Component{
+  constructor(){
+    super();
+    this.state={
+      showModal:false
+    }
+  }
+
+  close(){
+    this.setState({showModal: false})
+  }
+
+  open(){
+    this.setState({showModal: true})
+  }
 
   onDelete(_id){
     // console.log(_id);
@@ -82,13 +97,36 @@ class Cart extends React.Component{
     return(
       <Panel header='Cart' bsStyle="primary">
         {cartItemsList}
-      </Panel>
+        <Row>
+          <Col xs={12}>
+            <h6>Total amount: {this.props.totalAmount}$</h6>
+            <Button bsStyle='success' bsSize="small" onClick={this.open.bind(this)}>
+              PROCEED TO CHECKOUT
+            </Button>
+          </Col>
+        </Row>
+        <Modal show={this.state.showModal} onHide={this.close.bind(this)}>
+         <Modal.Header closeButton>
+           <Modal.Title>Thank You!</Modal.Title>
+         </Modal.Header>
+         <Modal.Body>
+           <h3>Your order has been saved.</h3>
+         </Modal.Body>
+         <Modal.Footer>
+           <Col xs={6}>
+             <h6>Your total $ :{this.props.totalAmount}</h6>
+           </Col>
+            <Button onClick={this.close.bind(this)}>Close</Button>
+          </Modal.Footer>
+       </Modal>
+       </Panel>
     )
   }
 }
 function mapStateToProps(state){
   return{
-    cart: state.cart.cart
+    cart: state.cart.cart,
+    totalAmount: state.cart.totalAmount
   }
 }
 function mapDispatchToProps(dispatch){
