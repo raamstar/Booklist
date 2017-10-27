@@ -11323,6 +11323,10 @@ var _booksList2 = _interopRequireDefault(_booksList);
 
 var _reactRedux = __webpack_require__(92);
 
+var _menu = __webpack_require__(524);
+
+var _menu2 = _interopRequireDefault(_menu);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 //3rd define reducer in reducers folder
@@ -11334,7 +11338,12 @@ store.subscribe(function () {
 (0, _reactDom.render)(_react2.default.createElement(
   _reactRedux.Provider,
   { store: store },
-  _react2.default.createElement(_booksList2.default, null)
+  _react2.default.createElement(
+    'div',
+    null,
+    _react2.default.createElement(_menu2.default, null),
+    _react2.default.createElement(_booksList2.default, null)
+  )
 ), document.getElementById('app'));
 
 //2nd create dispatch action
@@ -25804,7 +25813,43 @@ module.exports = {};
 
 /***/ }),
 /* 266 */,
-/* 267 */,
+/* 267 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+
+var _createUncontrollable = __webpack_require__(407);
+
+var _createUncontrollable2 = _interopRequireDefault(_createUncontrollable);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var mixin = {
+  shouldComponentUpdate: function shouldComponentUpdate() {
+    //let the forceUpdate trigger the update
+    return !this._notifying;
+  }
+};
+
+function set(component, propName, handler, value, args) {
+  if (handler) {
+    component._notifying = true;
+    handler.call.apply(handler, [component, value].concat(args));
+    component._notifying = false;
+  }
+
+  component._values[propName] = value;
+
+  if (!component.unmounted) component.forceUpdate();
+}
+
+exports.default = (0, _createUncontrollable2.default)(mixin, set);
+module.exports = exports['default'];
+
+/***/ }),
 /* 268 */
 /***/ (function(module, exports) {
 
@@ -26351,7 +26396,158 @@ module.exports = function (name) {
 /* 298 */,
 /* 299 */,
 /* 300 */,
-/* 301 */,
+/* 301 */
+/***/ (function(module, exports) {
+
+// Source: http://jsfiddle.net/vWx8V/
+// http://stackoverflow.com/questions/5603195/full-list-of-javascript-keycodes
+
+/**
+ * Conenience method returns corresponding value for given keyName or keyCode.
+ *
+ * @param {Mixed} keyCode {Number} or keyName {String}
+ * @return {Mixed}
+ * @api public
+ */
+
+exports = module.exports = function(searchInput) {
+  // Keyboard Events
+  if (searchInput && 'object' === typeof searchInput) {
+    var hasKeyCode = searchInput.which || searchInput.keyCode || searchInput.charCode
+    if (hasKeyCode) searchInput = hasKeyCode
+  }
+
+  // Numbers
+  if ('number' === typeof searchInput) return names[searchInput]
+
+  // Everything else (cast to string)
+  var search = String(searchInput)
+
+  // check codes
+  var foundNamedKey = codes[search.toLowerCase()]
+  if (foundNamedKey) return foundNamedKey
+
+  // check aliases
+  var foundNamedKey = aliases[search.toLowerCase()]
+  if (foundNamedKey) return foundNamedKey
+
+  // weird character?
+  if (search.length === 1) return search.charCodeAt(0)
+
+  return undefined
+}
+
+/**
+ * Get by name
+ *
+ *   exports.code['enter'] // => 13
+ */
+
+var codes = exports.code = exports.codes = {
+  'backspace': 8,
+  'tab': 9,
+  'enter': 13,
+  'shift': 16,
+  'ctrl': 17,
+  'alt': 18,
+  'pause/break': 19,
+  'caps lock': 20,
+  'esc': 27,
+  'space': 32,
+  'page up': 33,
+  'page down': 34,
+  'end': 35,
+  'home': 36,
+  'left': 37,
+  'up': 38,
+  'right': 39,
+  'down': 40,
+  'insert': 45,
+  'delete': 46,
+  'command': 91,
+  'left command': 91,
+  'right command': 93,
+  'numpad *': 106,
+  'numpad +': 107,
+  'numpad -': 109,
+  'numpad .': 110,
+  'numpad /': 111,
+  'num lock': 144,
+  'scroll lock': 145,
+  'my computer': 182,
+  'my calculator': 183,
+  ';': 186,
+  '=': 187,
+  ',': 188,
+  '-': 189,
+  '.': 190,
+  '/': 191,
+  '`': 192,
+  '[': 219,
+  '\\': 220,
+  ']': 221,
+  "'": 222
+}
+
+// Helper aliases
+
+var aliases = exports.aliases = {
+  'windows': 91,
+  '⇧': 16,
+  '⌥': 18,
+  '⌃': 17,
+  '⌘': 91,
+  'ctl': 17,
+  'control': 17,
+  'option': 18,
+  'pause': 19,
+  'break': 19,
+  'caps': 20,
+  'return': 13,
+  'escape': 27,
+  'spc': 32,
+  'pgup': 33,
+  'pgdn': 34,
+  'ins': 45,
+  'del': 46,
+  'cmd': 91
+}
+
+
+/*!
+ * Programatically add the following
+ */
+
+// lower case chars
+for (i = 97; i < 123; i++) codes[String.fromCharCode(i)] = i - 32
+
+// numbers
+for (var i = 48; i < 58; i++) codes[i - 48] = i
+
+// function keys
+for (i = 1; i < 13; i++) codes['f'+i] = i + 111
+
+// numpad keys
+for (i = 0; i < 10; i++) codes['numpad '+i] = i + 96
+
+/**
+ * Get by code
+ *
+ *   exports.name[13] // => 'Enter'
+ */
+
+var names = exports.names = exports.title = {} // title for backward compat
+
+// Create reverse mapping
+for (i in codes) names[codes[i]] = i
+
+// Add aliases
+for (var alias in aliases) {
+  codes[alias] = aliases[alias]
+}
+
+
+/***/ }),
 /* 302 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -28414,8 +28610,330 @@ function isTransform(property) {
 module.exports = exports["default"];
 
 /***/ }),
-/* 407 */,
-/* 408 */,
+/* 407 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+exports.default = createUncontrollable;
+
+var _react = __webpack_require__(33);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _invariant = __webpack_require__(222);
+
+var _invariant2 = _interopRequireDefault(_invariant);
+
+var _utils = __webpack_require__(408);
+
+var utils = _interopRequireWildcard(_utils);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+function createUncontrollable(mixin, set) {
+
+  return uncontrollable;
+
+  function uncontrollable(Component, controlledValues) {
+    var _class, _temp;
+
+    var methods = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+
+    var displayName = Component.displayName || Component.name || 'Component',
+        basePropTypes = utils.getType(Component).propTypes,
+        isCompositeComponent = utils.isReactComponent(Component),
+        controlledProps = Object.keys(controlledValues),
+        propTypes;
+
+    var OMIT_PROPS = ['valueLink', 'checkedLink'].concat(controlledProps.map(utils.defaultKey));
+
+    propTypes = utils.uncontrolledPropTypes(controlledValues, basePropTypes, displayName);
+
+    (0, _invariant2.default)(isCompositeComponent || !methods.length, '[uncontrollable] stateless function components cannot pass through methods ' + 'because they have no associated instances. Check component: ' + displayName + ', ' + 'attempting to pass through methods: ' + methods.join(', '));
+
+    methods = utils.transform(methods, function (obj, method) {
+      obj[method] = function () {
+        var _refs$inner;
+
+        return (_refs$inner = this.refs.inner)[method].apply(_refs$inner, arguments);
+      };
+    }, {});
+
+    var component = (_temp = _class = function (_React$Component) {
+      _inherits(component, _React$Component);
+
+      function component() {
+        _classCallCheck(this, component);
+
+        return _possibleConstructorReturn(this, _React$Component.apply(this, arguments));
+      }
+
+      component.prototype.shouldComponentUpdate = function shouldComponentUpdate() {
+        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+          args[_key] = arguments[_key];
+        }
+
+        return !mixin.shouldComponentUpdate || mixin.shouldComponentUpdate.apply(this, args);
+      };
+
+      component.prototype.componentWillMount = function componentWillMount() {
+        var _this2 = this;
+
+        var props = this.props;
+
+        this._values = {};
+
+        controlledProps.forEach(function (key) {
+          _this2._values[key] = props[utils.defaultKey(key)];
+        });
+      };
+
+      /**
+       * If a prop switches from controlled to Uncontrolled
+       * reset its value to the defaultValue
+       */
+
+
+      component.prototype.componentWillReceiveProps = function componentWillReceiveProps(nextProps) {
+        var _this3 = this;
+
+        var props = this.props;
+
+        if (mixin.componentWillReceiveProps) {
+          mixin.componentWillReceiveProps.call(this, nextProps);
+        }
+
+        controlledProps.forEach(function (key) {
+          if (utils.getValue(nextProps, key) === undefined && utils.getValue(props, key) !== undefined) {
+            _this3._values[key] = nextProps[utils.defaultKey(key)];
+          }
+        });
+      };
+
+      component.prototype.componentWillUnmount = function componentWillUnmount() {
+        this.unmounted = true;
+      };
+
+      component.prototype.getControlledInstance = function getControlledInstance() {
+        return this.refs.inner;
+      };
+
+      component.prototype.render = function render() {
+        var _this4 = this;
+
+        var newProps = {},
+            props = omitProps(this.props);
+
+        utils.each(controlledValues, function (handle, propName) {
+          var linkPropName = utils.getLinkName(propName),
+              prop = _this4.props[propName];
+
+          if (linkPropName && !isProp(_this4.props, propName) && isProp(_this4.props, linkPropName)) {
+            prop = _this4.props[linkPropName].value;
+          }
+
+          newProps[propName] = prop !== undefined ? prop : _this4._values[propName];
+
+          newProps[handle] = setAndNotify.bind(_this4, propName);
+        });
+
+        newProps = _extends({}, props, newProps, {
+          ref: isCompositeComponent ? 'inner' : null
+        });
+
+        return _react2.default.createElement(Component, newProps);
+      };
+
+      return component;
+    }(_react2.default.Component), _class.displayName = 'Uncontrolled(' + displayName + ')', _class.propTypes = propTypes, _temp);
+
+    _extends(component.prototype, methods);
+
+    component.ControlledComponent = Component;
+
+    /**
+     * useful when wrapping a Component and you want to control
+     * everything
+     */
+    component.deferControlTo = function (newComponent) {
+      var additions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var nextMethods = arguments[2];
+
+      return uncontrollable(newComponent, _extends({}, controlledValues, additions), nextMethods);
+    };
+
+    return component;
+
+    function setAndNotify(propName, value) {
+      var linkName = utils.getLinkName(propName),
+          handler = this.props[controlledValues[propName]];
+
+      if (linkName && isProp(this.props, linkName) && !handler) {
+        handler = this.props[linkName].requestChange;
+      }
+
+      for (var _len2 = arguments.length, args = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
+        args[_key2 - 2] = arguments[_key2];
+      }
+
+      set(this, propName, handler, value, args);
+    }
+
+    function isProp(props, prop) {
+      return props[prop] !== undefined;
+    }
+
+    function omitProps(props) {
+      var result = {};
+
+      utils.each(props, function (value, key) {
+        if (OMIT_PROPS.indexOf(key) === -1) result[key] = value;
+      });
+
+      return result;
+    }
+  }
+}
+module.exports = exports['default'];
+
+/***/ }),
+/* 408 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {
+
+exports.__esModule = true;
+exports.version = undefined;
+exports.uncontrolledPropTypes = uncontrolledPropTypes;
+exports.getType = getType;
+exports.getValue = getValue;
+exports.getLinkName = getLinkName;
+exports.defaultKey = defaultKey;
+exports.chain = chain;
+exports.transform = transform;
+exports.each = each;
+exports.has = has;
+exports.isReactComponent = isReactComponent;
+
+var _react = __webpack_require__(33);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _invariant = __webpack_require__(222);
+
+var _invariant2 = _interopRequireDefault(_invariant);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function readOnlyPropType(handler, name) {
+  return function (props, propName) {
+    if (props[propName] !== undefined) {
+      if (!props[handler]) {
+        return new Error('You have provided a `' + propName + '` prop to ' + '`' + name + '` without an `' + handler + '` handler. This will render a read-only field. ' + 'If the field should be mutable use `' + defaultKey(propName) + '`. Otherwise, set `' + handler + '`');
+      }
+    }
+  };
+}
+
+function uncontrolledPropTypes(controlledValues, basePropTypes, displayName) {
+  var propTypes = {};
+
+  if (process.env.NODE_ENV !== 'production' && basePropTypes) {
+    transform(controlledValues, function (obj, handler, prop) {
+      (0, _invariant2.default)(typeof handler === 'string' && handler.trim().length, 'Uncontrollable - [%s]: the prop `%s` needs a valid handler key name in order to make it uncontrollable', displayName, prop);
+
+      obj[prop] = readOnlyPropType(handler, displayName);
+    }, propTypes);
+  }
+
+  return propTypes;
+}
+
+var version = exports.version = _react2.default.version.split('.').map(parseFloat);
+
+function getType(component) {
+  if (version[0] >= 15 || version[0] === 0 && version[1] >= 13) return component;
+
+  return component.type;
+}
+
+function getValue(props, name) {
+  var linkPropName = getLinkName(name);
+
+  if (linkPropName && !isProp(props, name) && isProp(props, linkPropName)) return props[linkPropName].value;
+
+  return props[name];
+}
+
+function isProp(props, prop) {
+  return props[prop] !== undefined;
+}
+
+function getLinkName(name) {
+  return name === 'value' ? 'valueLink' : name === 'checked' ? 'checkedLink' : null;
+}
+
+function defaultKey(key) {
+  return 'default' + key.charAt(0).toUpperCase() + key.substr(1);
+}
+
+function chain(thisArg, a, b) {
+  return function chainedFunction() {
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    a && a.call.apply(a, [thisArg].concat(args));
+    b && b.call.apply(b, [thisArg].concat(args));
+  };
+}
+
+function transform(obj, cb, seed) {
+  each(obj, cb.bind(null, seed = seed || (Array.isArray(obj) ? [] : {})));
+  return seed;
+}
+
+function each(obj, cb, thisArg) {
+  if (Array.isArray(obj)) return obj.forEach(cb, thisArg);
+
+  for (var key in obj) {
+    if (has(obj, key)) cb.call(thisArg, obj[key], key, obj);
+  }
+}
+
+function has(o, k) {
+  return o ? Object.prototype.hasOwnProperty.call(o, k) : false;
+}
+
+/**
+ * Copyright (c) 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ */
+function isReactComponent(component) {
+  return !!(component && component.prototype && component.prototype.isReactComponent);
+}
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+
+/***/ }),
 /* 409 */,
 /* 410 */,
 /* 411 */,
@@ -34404,6 +34922,1493 @@ function splitComponentProps(props, Component) {
   return [parentProps, childProps];
 }
 module.exports = exports["default"];
+
+/***/ }),
+/* 524 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(33);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _Nav = __webpack_require__(525);
+
+var _Nav2 = _interopRequireDefault(_Nav);
+
+var _NavItem = __webpack_require__(526);
+
+var _NavItem2 = _interopRequireDefault(_NavItem);
+
+var _Navbar = __webpack_require__(527);
+
+var _Navbar2 = _interopRequireDefault(_Navbar);
+
+var _badge = __webpack_require__(532);
+
+var _badge2 = _interopRequireDefault(_badge);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Menu = function (_React$Component) {
+  _inherits(Menu, _React$Component);
+
+  function Menu() {
+    _classCallCheck(this, Menu);
+
+    return _possibleConstructorReturn(this, (Menu.__proto__ || Object.getPrototypeOf(Menu)).apply(this, arguments));
+  }
+
+  _createClass(Menu, [{
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        _Navbar2.default,
+        { inverse: true, fixedTop: true },
+        _react2.default.createElement(
+          _Navbar2.default.Header,
+          null,
+          _react2.default.createElement(
+            _Navbar2.default.Brand,
+            null,
+            _react2.default.createElement(
+              'a',
+              { href: '/' },
+              'React-Bootstrap'
+            )
+          ),
+          _react2.default.createElement(_Navbar2.default.Toggle, null)
+        ),
+        _react2.default.createElement(
+          _Navbar2.default.Collapse,
+          null,
+          _react2.default.createElement(
+            _Nav2.default,
+            null,
+            _react2.default.createElement(
+              _NavItem2.default,
+              { eventKey: 1, href: '/about' },
+              'About'
+            ),
+            _react2.default.createElement(
+              _NavItem2.default,
+              { eventKey: 2, href: '/contact' },
+              'Contact'
+            )
+          ),
+          _react2.default.createElement(
+            _Nav2.default,
+            { pullRight: true },
+            _react2.default.createElement(
+              _NavItem2.default,
+              { eventKey: 1, href: '/admin' },
+              'Admin'
+            ),
+            _react2.default.createElement(
+              _NavItem2.default,
+              { eventKey: 2, href: '/cart' },
+              'Your Cart',
+              _react2.default.createElement(
+                _badge2.default,
+                { className: 'badge' },
+                '1'
+              )
+            )
+          )
+        )
+      );
+    }
+  }]);
+
+  return Menu;
+}(_react2.default.Component);
+
+exports.default = Menu;
+
+/***/ }),
+/* 525 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {
+
+exports.__esModule = true;
+
+var _extends3 = __webpack_require__(235);
+
+var _extends4 = _interopRequireDefault(_extends3);
+
+var _objectWithoutProperties2 = __webpack_require__(236);
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
+var _classCallCheck2 = __webpack_require__(232);
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _possibleConstructorReturn2 = __webpack_require__(233);
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = __webpack_require__(234);
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _classnames = __webpack_require__(237);
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _keycode = __webpack_require__(301);
+
+var _keycode2 = _interopRequireDefault(_keycode);
+
+var _react = __webpack_require__(33);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(93);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _reactDom = __webpack_require__(118);
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
+var _all = __webpack_require__(270);
+
+var _all2 = _interopRequireDefault(_all);
+
+var _warning = __webpack_require__(243);
+
+var _warning2 = _interopRequireDefault(_warning);
+
+var _bootstrapUtils = __webpack_require__(492);
+
+var _createChainedFunction = __webpack_require__(494);
+
+var _createChainedFunction2 = _interopRequireDefault(_createChainedFunction);
+
+var _ValidComponentChildren = __webpack_require__(511);
+
+var _ValidComponentChildren2 = _interopRequireDefault(_ValidComponentChildren);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// TODO: Should we expose `<NavItem>` as `<Nav.Item>`?
+
+// TODO: This `bsStyle` is very unlike the others. Should we rename it?
+
+// TODO: `pullRight` and `pullLeft` don't render right outside of `navbar`.
+// Consider renaming or replacing them.
+
+var propTypes = {
+  /**
+   * Marks the NavItem with a matching `eventKey` as active. Has a
+   * higher precedence over `activeHref`.
+   */
+  activeKey: _propTypes2.default.any,
+
+  /**
+   * Marks the child NavItem with a matching `href` prop as active.
+   */
+  activeHref: _propTypes2.default.string,
+
+  /**
+   * NavItems are be positioned vertically.
+   */
+  stacked: _propTypes2.default.bool,
+
+  justified: (0, _all2.default)(_propTypes2.default.bool, function (_ref) {
+    var justified = _ref.justified,
+        navbar = _ref.navbar;
+    return justified && navbar ? Error('justified navbar `Nav`s are not supported') : null;
+  }),
+
+  /**
+   * A callback fired when a NavItem is selected.
+   *
+   * ```js
+   * function (
+   *  Any eventKey,
+   *  SyntheticEvent event?
+   * )
+   * ```
+   */
+  onSelect: _propTypes2.default.func,
+
+  /**
+   * ARIA role for the Nav, in the context of a TabContainer, the default will
+   * be set to "tablist", but can be overridden by the Nav when set explicitly.
+   *
+   * When the role is set to "tablist" NavItem focus is managed according to
+   * the ARIA authoring practices for tabs:
+   * https://www.w3.org/TR/2013/WD-wai-aria-practices-20130307/#tabpanel
+   */
+  role: _propTypes2.default.string,
+
+  /**
+   * Apply styling an alignment for use in a Navbar. This prop will be set
+   * automatically when the Nav is used inside a Navbar.
+   */
+  navbar: _propTypes2.default.bool,
+
+  /**
+   * Float the Nav to the right. When `navbar` is `true` the appropriate
+   * contextual classes are added as well.
+   */
+  pullRight: _propTypes2.default.bool,
+
+  /**
+   * Float the Nav to the left. When `navbar` is `true` the appropriate
+   * contextual classes are added as well.
+   */
+  pullLeft: _propTypes2.default.bool
+};
+
+var defaultProps = {
+  justified: false,
+  pullRight: false,
+  pullLeft: false,
+  stacked: false
+};
+
+var contextTypes = {
+  $bs_navbar: _propTypes2.default.shape({
+    bsClass: _propTypes2.default.string,
+    onSelect: _propTypes2.default.func
+  }),
+
+  $bs_tabContainer: _propTypes2.default.shape({
+    activeKey: _propTypes2.default.any,
+    onSelect: _propTypes2.default.func.isRequired,
+    getTabId: _propTypes2.default.func.isRequired,
+    getPaneId: _propTypes2.default.func.isRequired
+  })
+};
+
+var Nav = function (_React$Component) {
+  (0, _inherits3.default)(Nav, _React$Component);
+
+  function Nav() {
+    (0, _classCallCheck3.default)(this, Nav);
+    return (0, _possibleConstructorReturn3.default)(this, _React$Component.apply(this, arguments));
+  }
+
+  Nav.prototype.componentDidUpdate = function componentDidUpdate() {
+    var _this2 = this;
+
+    if (!this._needsRefocus) {
+      return;
+    }
+
+    this._needsRefocus = false;
+
+    var children = this.props.children;
+
+    var _getActiveProps = this.getActiveProps(),
+        activeKey = _getActiveProps.activeKey,
+        activeHref = _getActiveProps.activeHref;
+
+    var activeChild = _ValidComponentChildren2.default.find(children, function (child) {
+      return _this2.isActive(child, activeKey, activeHref);
+    });
+
+    var childrenArray = _ValidComponentChildren2.default.toArray(children);
+    var activeChildIndex = childrenArray.indexOf(activeChild);
+
+    var childNodes = _reactDom2.default.findDOMNode(this).children;
+    var activeNode = childNodes && childNodes[activeChildIndex];
+
+    if (!activeNode || !activeNode.firstChild) {
+      return;
+    }
+
+    activeNode.firstChild.focus();
+  };
+
+  Nav.prototype.getActiveProps = function getActiveProps() {
+    var tabContainer = this.context.$bs_tabContainer;
+
+    if (tabContainer) {
+      process.env.NODE_ENV !== 'production' ? (0, _warning2.default)(this.props.activeKey == null && !this.props.activeHref, 'Specifying a `<Nav>` `activeKey` or `activeHref` in the context of ' + 'a `<TabContainer>` is not supported. Instead use `<TabContainer ' + ('activeKey={' + this.props.activeKey + '} />`.')) : void 0;
+
+      return tabContainer;
+    }
+
+    return this.props;
+  };
+
+  Nav.prototype.getNextActiveChild = function getNextActiveChild(offset) {
+    var _this3 = this;
+
+    var children = this.props.children;
+
+    var validChildren = children.filter(function (child) {
+      return child.props.eventKey != null && !child.props.disabled;
+    });
+
+    var _getActiveProps2 = this.getActiveProps(),
+        activeKey = _getActiveProps2.activeKey,
+        activeHref = _getActiveProps2.activeHref;
+
+    var activeChild = _ValidComponentChildren2.default.find(children, function (child) {
+      return _this3.isActive(child, activeKey, activeHref);
+    });
+
+    // This assumes the active child is not disabled.
+    var activeChildIndex = validChildren.indexOf(activeChild);
+    if (activeChildIndex === -1) {
+      // Something has gone wrong. Select the first valid child we can find.
+      return validChildren[0];
+    }
+
+    var nextIndex = activeChildIndex + offset;
+    var numValidChildren = validChildren.length;
+
+    if (nextIndex >= numValidChildren) {
+      nextIndex = 0;
+    } else if (nextIndex < 0) {
+      nextIndex = numValidChildren - 1;
+    }
+
+    return validChildren[nextIndex];
+  };
+
+  Nav.prototype.getTabProps = function getTabProps(child, tabContainer, navRole, active, onSelect) {
+    var _this4 = this;
+
+    if (!tabContainer && navRole !== 'tablist') {
+      // No tab props here.
+      return null;
+    }
+
+    var _child$props = child.props,
+        id = _child$props.id,
+        controls = _child$props['aria-controls'],
+        eventKey = _child$props.eventKey,
+        role = _child$props.role,
+        onKeyDown = _child$props.onKeyDown,
+        tabIndex = _child$props.tabIndex;
+
+
+    if (tabContainer) {
+      process.env.NODE_ENV !== 'production' ? (0, _warning2.default)(!id && !controls, 'In the context of a `<TabContainer>`, `<NavItem>`s are given ' + 'generated `id` and `aria-controls` attributes for the sake of ' + 'proper component accessibility. Any provided ones will be ignored. ' + 'To control these attributes directly, provide a `generateChildId` ' + 'prop to the parent `<TabContainer>`.') : void 0;
+
+      id = tabContainer.getTabId(eventKey);
+      controls = tabContainer.getPaneId(eventKey);
+    }
+
+    if (navRole === 'tablist') {
+      role = role || 'tab';
+      onKeyDown = (0, _createChainedFunction2.default)(function (event) {
+        return _this4.handleTabKeyDown(onSelect, event);
+      }, onKeyDown);
+      tabIndex = active ? tabIndex : -1;
+    }
+
+    return {
+      id: id,
+      role: role,
+      onKeyDown: onKeyDown,
+      'aria-controls': controls,
+      tabIndex: tabIndex
+    };
+  };
+
+  Nav.prototype.handleTabKeyDown = function handleTabKeyDown(onSelect, event) {
+    var nextActiveChild = void 0;
+
+    switch (event.keyCode) {
+      case _keycode2.default.codes.left:
+      case _keycode2.default.codes.up:
+        nextActiveChild = this.getNextActiveChild(-1);
+        break;
+      case _keycode2.default.codes.right:
+      case _keycode2.default.codes.down:
+        nextActiveChild = this.getNextActiveChild(1);
+        break;
+      default:
+        // It was a different key; don't handle this keypress.
+        return;
+    }
+
+    event.preventDefault();
+
+    if (onSelect && nextActiveChild && nextActiveChild.props.eventKey != null) {
+      onSelect(nextActiveChild.props.eventKey);
+    }
+
+    this._needsRefocus = true;
+  };
+
+  Nav.prototype.isActive = function isActive(_ref2, activeKey, activeHref) {
+    var props = _ref2.props;
+
+    if (props.active || activeKey != null && props.eventKey === activeKey || activeHref && props.href === activeHref) {
+      return true;
+    }
+
+    return props.active;
+  };
+
+  Nav.prototype.render = function render() {
+    var _extends2,
+        _this5 = this;
+
+    var _props = this.props,
+        stacked = _props.stacked,
+        justified = _props.justified,
+        onSelect = _props.onSelect,
+        propsRole = _props.role,
+        propsNavbar = _props.navbar,
+        pullRight = _props.pullRight,
+        pullLeft = _props.pullLeft,
+        className = _props.className,
+        children = _props.children,
+        props = (0, _objectWithoutProperties3.default)(_props, ['stacked', 'justified', 'onSelect', 'role', 'navbar', 'pullRight', 'pullLeft', 'className', 'children']);
+
+
+    var tabContainer = this.context.$bs_tabContainer;
+    var role = propsRole || (tabContainer ? 'tablist' : null);
+
+    var _getActiveProps3 = this.getActiveProps(),
+        activeKey = _getActiveProps3.activeKey,
+        activeHref = _getActiveProps3.activeHref;
+
+    delete props.activeKey; // Accessed via this.getActiveProps().
+    delete props.activeHref; // Accessed via this.getActiveProps().
+
+    var _splitBsProps = (0, _bootstrapUtils.splitBsProps)(props),
+        bsProps = _splitBsProps[0],
+        elementProps = _splitBsProps[1];
+
+    var classes = (0, _extends4.default)({}, (0, _bootstrapUtils.getClassSet)(bsProps), (_extends2 = {}, _extends2[(0, _bootstrapUtils.prefix)(bsProps, 'stacked')] = stacked, _extends2[(0, _bootstrapUtils.prefix)(bsProps, 'justified')] = justified, _extends2));
+
+    var navbar = propsNavbar != null ? propsNavbar : this.context.$bs_navbar;
+    var pullLeftClassName = void 0;
+    var pullRightClassName = void 0;
+
+    if (navbar) {
+      var navbarProps = this.context.$bs_navbar || { bsClass: 'navbar' };
+
+      classes[(0, _bootstrapUtils.prefix)(navbarProps, 'nav')] = true;
+
+      pullRightClassName = (0, _bootstrapUtils.prefix)(navbarProps, 'right');
+      pullLeftClassName = (0, _bootstrapUtils.prefix)(navbarProps, 'left');
+    } else {
+      pullRightClassName = 'pull-right';
+      pullLeftClassName = 'pull-left';
+    }
+
+    classes[pullRightClassName] = pullRight;
+    classes[pullLeftClassName] = pullLeft;
+
+    return _react2.default.createElement(
+      'ul',
+      (0, _extends4.default)({}, elementProps, {
+        role: role,
+        className: (0, _classnames2.default)(className, classes)
+      }),
+      _ValidComponentChildren2.default.map(children, function (child) {
+        var active = _this5.isActive(child, activeKey, activeHref);
+        var childOnSelect = (0, _createChainedFunction2.default)(child.props.onSelect, onSelect, navbar && navbar.onSelect, tabContainer && tabContainer.onSelect);
+
+        return (0, _react.cloneElement)(child, (0, _extends4.default)({}, _this5.getTabProps(child, tabContainer, role, active, childOnSelect), {
+          active: active,
+          activeKey: activeKey,
+          activeHref: activeHref,
+          onSelect: childOnSelect
+        }));
+      })
+    );
+  };
+
+  return Nav;
+}(_react2.default.Component);
+
+Nav.propTypes = propTypes;
+Nav.defaultProps = defaultProps;
+Nav.contextTypes = contextTypes;
+
+exports.default = (0, _bootstrapUtils.bsClass)('nav', (0, _bootstrapUtils.bsStyles)(['tabs', 'pills'], Nav));
+module.exports = exports['default'];
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+
+/***/ }),
+/* 526 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+
+var _extends2 = __webpack_require__(235);
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _objectWithoutProperties2 = __webpack_require__(236);
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
+var _classCallCheck2 = __webpack_require__(232);
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _possibleConstructorReturn2 = __webpack_require__(233);
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = __webpack_require__(234);
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _classnames = __webpack_require__(237);
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _react = __webpack_require__(33);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(93);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _SafeAnchor = __webpack_require__(493);
+
+var _SafeAnchor2 = _interopRequireDefault(_SafeAnchor);
+
+var _createChainedFunction = __webpack_require__(494);
+
+var _createChainedFunction2 = _interopRequireDefault(_createChainedFunction);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var propTypes = {
+  active: _propTypes2.default.bool,
+  disabled: _propTypes2.default.bool,
+  role: _propTypes2.default.string,
+  href: _propTypes2.default.string,
+  onClick: _propTypes2.default.func,
+  onSelect: _propTypes2.default.func,
+  eventKey: _propTypes2.default.any
+};
+
+var defaultProps = {
+  active: false,
+  disabled: false
+};
+
+var NavItem = function (_React$Component) {
+  (0, _inherits3.default)(NavItem, _React$Component);
+
+  function NavItem(props, context) {
+    (0, _classCallCheck3.default)(this, NavItem);
+
+    var _this = (0, _possibleConstructorReturn3.default)(this, _React$Component.call(this, props, context));
+
+    _this.handleClick = _this.handleClick.bind(_this);
+    return _this;
+  }
+
+  NavItem.prototype.handleClick = function handleClick(e) {
+    if (this.props.onSelect) {
+      e.preventDefault();
+
+      if (!this.props.disabled) {
+        this.props.onSelect(this.props.eventKey, e);
+      }
+    }
+  };
+
+  NavItem.prototype.render = function render() {
+    var _props = this.props,
+        active = _props.active,
+        disabled = _props.disabled,
+        onClick = _props.onClick,
+        className = _props.className,
+        style = _props.style,
+        props = (0, _objectWithoutProperties3.default)(_props, ['active', 'disabled', 'onClick', 'className', 'style']);
+
+
+    delete props.onSelect;
+    delete props.eventKey;
+
+    // These are injected down by `<Nav>` for building `<SubNav>`s.
+    delete props.activeKey;
+    delete props.activeHref;
+
+    if (!props.role) {
+      if (props.href === '#') {
+        props.role = 'button';
+      }
+    } else if (props.role === 'tab') {
+      props['aria-selected'] = active;
+    }
+
+    return _react2.default.createElement(
+      'li',
+      {
+        role: 'presentation',
+        className: (0, _classnames2.default)(className, { active: active, disabled: disabled }),
+        style: style
+      },
+      _react2.default.createElement(_SafeAnchor2.default, (0, _extends3.default)({}, props, {
+        disabled: disabled,
+        onClick: (0, _createChainedFunction2.default)(onClick, this.handleClick)
+      }))
+    );
+  };
+
+  return NavItem;
+}(_react2.default.Component);
+
+NavItem.propTypes = propTypes;
+NavItem.defaultProps = defaultProps;
+
+exports.default = NavItem;
+module.exports = exports['default'];
+
+/***/ }),
+/* 527 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+
+var _extends3 = __webpack_require__(235);
+
+var _extends4 = _interopRequireDefault(_extends3);
+
+var _objectWithoutProperties2 = __webpack_require__(236);
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
+var _classCallCheck2 = __webpack_require__(232);
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _possibleConstructorReturn2 = __webpack_require__(233);
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = __webpack_require__(234);
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _classnames = __webpack_require__(237);
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _react = __webpack_require__(33);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(93);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _elementType = __webpack_require__(239);
+
+var _elementType2 = _interopRequireDefault(_elementType);
+
+var _uncontrollable = __webpack_require__(267);
+
+var _uncontrollable2 = _interopRequireDefault(_uncontrollable);
+
+var _Grid = __webpack_require__(495);
+
+var _Grid2 = _interopRequireDefault(_Grid);
+
+var _NavbarBrand = __webpack_require__(528);
+
+var _NavbarBrand2 = _interopRequireDefault(_NavbarBrand);
+
+var _NavbarCollapse = __webpack_require__(529);
+
+var _NavbarCollapse2 = _interopRequireDefault(_NavbarCollapse);
+
+var _NavbarHeader = __webpack_require__(530);
+
+var _NavbarHeader2 = _interopRequireDefault(_NavbarHeader);
+
+var _NavbarToggle = __webpack_require__(531);
+
+var _NavbarToggle2 = _interopRequireDefault(_NavbarToggle);
+
+var _bootstrapUtils = __webpack_require__(492);
+
+var _StyleConfig = __webpack_require__(490);
+
+var _createChainedFunction = __webpack_require__(494);
+
+var _createChainedFunction2 = _interopRequireDefault(_createChainedFunction);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var propTypes = {
+  /**
+   * Create a fixed navbar along the top of the screen, that scrolls with the
+   * page
+   */
+  fixedTop: _propTypes2.default.bool,
+  /**
+   * Create a fixed navbar along the bottom of the screen, that scrolls with
+   * the page
+   */
+  fixedBottom: _propTypes2.default.bool,
+  /**
+   * Create a full-width navbar that scrolls away with the page
+   */
+  staticTop: _propTypes2.default.bool,
+  /**
+   * An alternative dark visual style for the Navbar
+   */
+  inverse: _propTypes2.default.bool,
+  /**
+   * Allow the Navbar to fluidly adjust to the page or container width, instead
+   * of at the predefined screen breakpoints
+   */
+  fluid: _propTypes2.default.bool,
+
+  /**
+   * Set a custom element for this component.
+   */
+  componentClass: _elementType2.default,
+  /**
+   * A callback fired when the `<Navbar>` body collapses or expands. Fired when
+   * a `<Navbar.Toggle>` is clicked and called with the new `expanded`
+   * boolean value.
+   *
+   * @controllable expanded
+   */
+  onToggle: _propTypes2.default.func,
+  /**
+   * A callback fired when a descendant of a child `<Nav>` is selected. Should
+   * be used to execute complex closing or other miscellaneous actions desired
+   * after selecting a descendant of `<Nav>`. Does nothing if no `<Nav>` or `<Nav>`
+   * descendants exist. The callback is called with an eventKey, which is a
+   * prop from the selected `<Nav>` descendant, and an event.
+   *
+   * ```js
+   * function (
+   *  Any eventKey,
+   *  SyntheticEvent event?
+   * )
+   * ```
+   *
+   * For basic closing behavior after all `<Nav>` descendant onSelect events in
+   * mobile viewports, try using collapseOnSelect.
+   *
+   * Note: If you are manually closing the navbar using this `OnSelect` prop,
+   * ensure that you are setting `expanded` to false and not *toggling* between
+   * true and false.
+   */
+  onSelect: _propTypes2.default.func,
+  /**
+   * Sets `expanded` to `false` after the onSelect event of a descendant of a
+   * child `<Nav>`. Does nothing if no `<Nav>` or `<Nav>` descendants exist.
+   *
+   * The onSelect callback should be used instead for more complex operations
+   * that need to be executed after the `select` event of `<Nav>` descendants.
+   */
+  collapseOnSelect: _propTypes2.default.bool,
+  /**
+   * Explicitly set the visiblity of the navbar body
+   *
+   * @controllable onToggle
+   */
+  expanded: _propTypes2.default.bool,
+
+  role: _propTypes2.default.string
+}; // TODO: Remove this pragma once we upgrade eslint-config-airbnb.
+/* eslint-disable react/no-multi-comp */
+
+var defaultProps = {
+  componentClass: 'nav',
+  fixedTop: false,
+  fixedBottom: false,
+  staticTop: false,
+  inverse: false,
+  fluid: false,
+  collapseOnSelect: false
+};
+
+var childContextTypes = {
+  $bs_navbar: _propTypes2.default.shape({
+    bsClass: _propTypes2.default.string,
+    expanded: _propTypes2.default.bool,
+    onToggle: _propTypes2.default.func.isRequired,
+    onSelect: _propTypes2.default.func
+  })
+};
+
+var Navbar = function (_React$Component) {
+  (0, _inherits3.default)(Navbar, _React$Component);
+
+  function Navbar(props, context) {
+    (0, _classCallCheck3.default)(this, Navbar);
+
+    var _this = (0, _possibleConstructorReturn3.default)(this, _React$Component.call(this, props, context));
+
+    _this.handleToggle = _this.handleToggle.bind(_this);
+    _this.handleCollapse = _this.handleCollapse.bind(_this);
+    return _this;
+  }
+
+  Navbar.prototype.getChildContext = function getChildContext() {
+    var _props = this.props,
+        bsClass = _props.bsClass,
+        expanded = _props.expanded,
+        onSelect = _props.onSelect,
+        collapseOnSelect = _props.collapseOnSelect;
+
+
+    return {
+      $bs_navbar: {
+        bsClass: bsClass,
+        expanded: expanded,
+        onToggle: this.handleToggle,
+        onSelect: (0, _createChainedFunction2.default)(onSelect, collapseOnSelect ? this.handleCollapse : null)
+      }
+    };
+  };
+
+  Navbar.prototype.handleCollapse = function handleCollapse() {
+    var _props2 = this.props,
+        onToggle = _props2.onToggle,
+        expanded = _props2.expanded;
+
+
+    if (expanded) {
+      onToggle(false);
+    }
+  };
+
+  Navbar.prototype.handleToggle = function handleToggle() {
+    var _props3 = this.props,
+        onToggle = _props3.onToggle,
+        expanded = _props3.expanded;
+
+
+    onToggle(!expanded);
+  };
+
+  Navbar.prototype.render = function render() {
+    var _extends2;
+
+    var _props4 = this.props,
+        Component = _props4.componentClass,
+        fixedTop = _props4.fixedTop,
+        fixedBottom = _props4.fixedBottom,
+        staticTop = _props4.staticTop,
+        inverse = _props4.inverse,
+        fluid = _props4.fluid,
+        className = _props4.className,
+        children = _props4.children,
+        props = (0, _objectWithoutProperties3.default)(_props4, ['componentClass', 'fixedTop', 'fixedBottom', 'staticTop', 'inverse', 'fluid', 'className', 'children']);
+
+    var _splitBsPropsAndOmit = (0, _bootstrapUtils.splitBsPropsAndOmit)(props, ['expanded', 'onToggle', 'onSelect', 'collapseOnSelect']),
+        bsProps = _splitBsPropsAndOmit[0],
+        elementProps = _splitBsPropsAndOmit[1];
+
+    // will result in some false positives but that seems better
+    // than false negatives. strict `undefined` check allows explicit
+    // "nulling" of the role if the user really doesn't want one
+
+
+    if (elementProps.role === undefined && Component !== 'nav') {
+      elementProps.role = 'navigation';
+    }
+
+    if (inverse) {
+      bsProps.bsStyle = _StyleConfig.Style.INVERSE;
+    }
+
+    var classes = (0, _extends4.default)({}, (0, _bootstrapUtils.getClassSet)(bsProps), (_extends2 = {}, _extends2[(0, _bootstrapUtils.prefix)(bsProps, 'fixed-top')] = fixedTop, _extends2[(0, _bootstrapUtils.prefix)(bsProps, 'fixed-bottom')] = fixedBottom, _extends2[(0, _bootstrapUtils.prefix)(bsProps, 'static-top')] = staticTop, _extends2));
+
+    return _react2.default.createElement(
+      Component,
+      (0, _extends4.default)({}, elementProps, {
+        className: (0, _classnames2.default)(className, classes)
+      }),
+      _react2.default.createElement(
+        _Grid2.default,
+        { fluid: fluid },
+        children
+      )
+    );
+  };
+
+  return Navbar;
+}(_react2.default.Component);
+
+Navbar.propTypes = propTypes;
+Navbar.defaultProps = defaultProps;
+Navbar.childContextTypes = childContextTypes;
+
+(0, _bootstrapUtils.bsClass)('navbar', Navbar);
+
+var UncontrollableNavbar = (0, _uncontrollable2.default)(Navbar, { expanded: 'onToggle' });
+
+function createSimpleWrapper(tag, suffix, displayName) {
+  var Wrapper = function Wrapper(_ref, _ref2) {
+    var _ref2$$bs_navbar = _ref2.$bs_navbar,
+        navbarProps = _ref2$$bs_navbar === undefined ? { bsClass: 'navbar' } : _ref2$$bs_navbar;
+    var Component = _ref.componentClass,
+        className = _ref.className,
+        pullRight = _ref.pullRight,
+        pullLeft = _ref.pullLeft,
+        props = (0, _objectWithoutProperties3.default)(_ref, ['componentClass', 'className', 'pullRight', 'pullLeft']);
+    return _react2.default.createElement(Component, (0, _extends4.default)({}, props, {
+      className: (0, _classnames2.default)(className, (0, _bootstrapUtils.prefix)(navbarProps, suffix), pullRight && (0, _bootstrapUtils.prefix)(navbarProps, 'right'), pullLeft && (0, _bootstrapUtils.prefix)(navbarProps, 'left'))
+    }));
+  };
+
+  Wrapper.displayName = displayName;
+
+  Wrapper.propTypes = {
+    componentClass: _elementType2.default,
+    pullRight: _propTypes2.default.bool,
+    pullLeft: _propTypes2.default.bool
+  };
+
+  Wrapper.defaultProps = {
+    componentClass: tag,
+    pullRight: false,
+    pullLeft: false
+  };
+
+  Wrapper.contextTypes = {
+    $bs_navbar: _propTypes2.default.shape({
+      bsClass: _propTypes2.default.string
+    })
+  };
+
+  return Wrapper;
+}
+
+UncontrollableNavbar.Brand = _NavbarBrand2.default;
+UncontrollableNavbar.Header = _NavbarHeader2.default;
+UncontrollableNavbar.Toggle = _NavbarToggle2.default;
+UncontrollableNavbar.Collapse = _NavbarCollapse2.default;
+
+UncontrollableNavbar.Form = createSimpleWrapper('div', 'form', 'NavbarForm');
+UncontrollableNavbar.Text = createSimpleWrapper('p', 'text', 'NavbarText');
+UncontrollableNavbar.Link = createSimpleWrapper('a', 'link', 'NavbarLink');
+
+// Set bsStyles here so they can be overridden.
+exports.default = (0, _bootstrapUtils.bsStyles)([_StyleConfig.Style.DEFAULT, _StyleConfig.Style.INVERSE], _StyleConfig.Style.DEFAULT, UncontrollableNavbar);
+module.exports = exports['default'];
+
+/***/ }),
+/* 528 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+
+var _extends2 = __webpack_require__(235);
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _objectWithoutProperties2 = __webpack_require__(236);
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
+var _classCallCheck2 = __webpack_require__(232);
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _possibleConstructorReturn2 = __webpack_require__(233);
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = __webpack_require__(234);
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _classnames = __webpack_require__(237);
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _react = __webpack_require__(33);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(93);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _bootstrapUtils = __webpack_require__(492);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var contextTypes = {
+  $bs_navbar: _propTypes2.default.shape({
+    bsClass: _propTypes2.default.string
+  })
+};
+
+var NavbarBrand = function (_React$Component) {
+  (0, _inherits3.default)(NavbarBrand, _React$Component);
+
+  function NavbarBrand() {
+    (0, _classCallCheck3.default)(this, NavbarBrand);
+    return (0, _possibleConstructorReturn3.default)(this, _React$Component.apply(this, arguments));
+  }
+
+  NavbarBrand.prototype.render = function render() {
+    var _props = this.props,
+        className = _props.className,
+        children = _props.children,
+        props = (0, _objectWithoutProperties3.default)(_props, ['className', 'children']);
+
+    var navbarProps = this.context.$bs_navbar || { bsClass: 'navbar' };
+
+    var bsClassName = (0, _bootstrapUtils.prefix)(navbarProps, 'brand');
+
+    if (_react2.default.isValidElement(children)) {
+      return _react2.default.cloneElement(children, {
+        className: (0, _classnames2.default)(children.props.className, className, bsClassName)
+      });
+    }
+
+    return _react2.default.createElement(
+      'span',
+      (0, _extends3.default)({}, props, { className: (0, _classnames2.default)(className, bsClassName) }),
+      children
+    );
+  };
+
+  return NavbarBrand;
+}(_react2.default.Component);
+
+NavbarBrand.contextTypes = contextTypes;
+
+exports.default = NavbarBrand;
+module.exports = exports['default'];
+
+/***/ }),
+/* 529 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+
+var _extends2 = __webpack_require__(235);
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _objectWithoutProperties2 = __webpack_require__(236);
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
+var _classCallCheck2 = __webpack_require__(232);
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _possibleConstructorReturn2 = __webpack_require__(233);
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = __webpack_require__(234);
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _react = __webpack_require__(33);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(93);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _Collapse = __webpack_require__(503);
+
+var _Collapse2 = _interopRequireDefault(_Collapse);
+
+var _bootstrapUtils = __webpack_require__(492);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var contextTypes = {
+  $bs_navbar: _propTypes2.default.shape({
+    bsClass: _propTypes2.default.string,
+    expanded: _propTypes2.default.bool
+  })
+};
+
+var NavbarCollapse = function (_React$Component) {
+  (0, _inherits3.default)(NavbarCollapse, _React$Component);
+
+  function NavbarCollapse() {
+    (0, _classCallCheck3.default)(this, NavbarCollapse);
+    return (0, _possibleConstructorReturn3.default)(this, _React$Component.apply(this, arguments));
+  }
+
+  NavbarCollapse.prototype.render = function render() {
+    var _props = this.props,
+        children = _props.children,
+        props = (0, _objectWithoutProperties3.default)(_props, ['children']);
+
+    var navbarProps = this.context.$bs_navbar || { bsClass: 'navbar' };
+
+    var bsClassName = (0, _bootstrapUtils.prefix)(navbarProps, 'collapse');
+
+    return _react2.default.createElement(
+      _Collapse2.default,
+      (0, _extends3.default)({ 'in': navbarProps.expanded }, props),
+      _react2.default.createElement(
+        'div',
+        { className: bsClassName },
+        children
+      )
+    );
+  };
+
+  return NavbarCollapse;
+}(_react2.default.Component);
+
+NavbarCollapse.contextTypes = contextTypes;
+
+exports.default = NavbarCollapse;
+module.exports = exports['default'];
+
+/***/ }),
+/* 530 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+
+var _extends2 = __webpack_require__(235);
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _objectWithoutProperties2 = __webpack_require__(236);
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
+var _classCallCheck2 = __webpack_require__(232);
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _possibleConstructorReturn2 = __webpack_require__(233);
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = __webpack_require__(234);
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _classnames = __webpack_require__(237);
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _react = __webpack_require__(33);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(93);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _bootstrapUtils = __webpack_require__(492);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var contextTypes = {
+  $bs_navbar: _propTypes2.default.shape({
+    bsClass: _propTypes2.default.string
+  })
+};
+
+var NavbarHeader = function (_React$Component) {
+  (0, _inherits3.default)(NavbarHeader, _React$Component);
+
+  function NavbarHeader() {
+    (0, _classCallCheck3.default)(this, NavbarHeader);
+    return (0, _possibleConstructorReturn3.default)(this, _React$Component.apply(this, arguments));
+  }
+
+  NavbarHeader.prototype.render = function render() {
+    var _props = this.props,
+        className = _props.className,
+        props = (0, _objectWithoutProperties3.default)(_props, ['className']);
+
+    var navbarProps = this.context.$bs_navbar || { bsClass: 'navbar' };
+
+    var bsClassName = (0, _bootstrapUtils.prefix)(navbarProps, 'header');
+
+    return _react2.default.createElement('div', (0, _extends3.default)({}, props, { className: (0, _classnames2.default)(className, bsClassName) }));
+  };
+
+  return NavbarHeader;
+}(_react2.default.Component);
+
+NavbarHeader.contextTypes = contextTypes;
+
+exports.default = NavbarHeader;
+module.exports = exports['default'];
+
+/***/ }),
+/* 531 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+
+var _extends2 = __webpack_require__(235);
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _objectWithoutProperties2 = __webpack_require__(236);
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
+var _classCallCheck2 = __webpack_require__(232);
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _possibleConstructorReturn2 = __webpack_require__(233);
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = __webpack_require__(234);
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _classnames = __webpack_require__(237);
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _react = __webpack_require__(33);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(93);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _bootstrapUtils = __webpack_require__(492);
+
+var _createChainedFunction = __webpack_require__(494);
+
+var _createChainedFunction2 = _interopRequireDefault(_createChainedFunction);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var propTypes = {
+  onClick: _propTypes2.default.func,
+  /**
+   * The toggle content, if left empty it will render the default toggle (seen above).
+   */
+  children: _propTypes2.default.node
+};
+
+var contextTypes = {
+  $bs_navbar: _propTypes2.default.shape({
+    bsClass: _propTypes2.default.string,
+    expanded: _propTypes2.default.bool,
+    onToggle: _propTypes2.default.func.isRequired
+  })
+};
+
+var NavbarToggle = function (_React$Component) {
+  (0, _inherits3.default)(NavbarToggle, _React$Component);
+
+  function NavbarToggle() {
+    (0, _classCallCheck3.default)(this, NavbarToggle);
+    return (0, _possibleConstructorReturn3.default)(this, _React$Component.apply(this, arguments));
+  }
+
+  NavbarToggle.prototype.render = function render() {
+    var _props = this.props,
+        onClick = _props.onClick,
+        className = _props.className,
+        children = _props.children,
+        props = (0, _objectWithoutProperties3.default)(_props, ['onClick', 'className', 'children']);
+
+    var navbarProps = this.context.$bs_navbar || { bsClass: 'navbar' };
+
+    var buttonProps = (0, _extends3.default)({
+      type: 'button'
+    }, props, {
+      onClick: (0, _createChainedFunction2.default)(onClick, navbarProps.onToggle),
+      className: (0, _classnames2.default)(className, (0, _bootstrapUtils.prefix)(navbarProps, 'toggle'), !navbarProps.expanded && 'collapsed')
+    });
+
+    if (children) {
+      return _react2.default.createElement(
+        'button',
+        buttonProps,
+        children
+      );
+    }
+
+    return _react2.default.createElement(
+      'button',
+      buttonProps,
+      _react2.default.createElement(
+        'span',
+        { className: 'sr-only' },
+        'Toggle navigation'
+      ),
+      _react2.default.createElement('span', { className: 'icon-bar' }),
+      _react2.default.createElement('span', { className: 'icon-bar' }),
+      _react2.default.createElement('span', { className: 'icon-bar' })
+    );
+  };
+
+  return NavbarToggle;
+}(_react2.default.Component);
+
+NavbarToggle.propTypes = propTypes;
+NavbarToggle.contextTypes = contextTypes;
+
+exports.default = NavbarToggle;
+module.exports = exports['default'];
+
+/***/ }),
+/* 532 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+
+var _extends2 = __webpack_require__(235);
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _objectWithoutProperties2 = __webpack_require__(236);
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
+var _classCallCheck2 = __webpack_require__(232);
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _possibleConstructorReturn2 = __webpack_require__(233);
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = __webpack_require__(234);
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _classnames = __webpack_require__(237);
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _react = __webpack_require__(33);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(93);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _bootstrapUtils = __webpack_require__(492);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// TODO: `pullRight` doesn't belong here. There's no special handling here.
+
+var propTypes = {
+  pullRight: _propTypes2.default.bool
+};
+
+var defaultProps = {
+  pullRight: false
+};
+
+var Badge = function (_React$Component) {
+  (0, _inherits3.default)(Badge, _React$Component);
+
+  function Badge() {
+    (0, _classCallCheck3.default)(this, Badge);
+    return (0, _possibleConstructorReturn3.default)(this, _React$Component.apply(this, arguments));
+  }
+
+  Badge.prototype.hasContent = function hasContent(children) {
+    var result = false;
+
+    _react2.default.Children.forEach(children, function (child) {
+      if (result) {
+        return;
+      }
+
+      if (child || child === 0) {
+        result = true;
+      }
+    });
+
+    return result;
+  };
+
+  Badge.prototype.render = function render() {
+    var _props = this.props,
+        pullRight = _props.pullRight,
+        className = _props.className,
+        children = _props.children,
+        props = (0, _objectWithoutProperties3.default)(_props, ['pullRight', 'className', 'children']);
+
+    var _splitBsProps = (0, _bootstrapUtils.splitBsProps)(props),
+        bsProps = _splitBsProps[0],
+        elementProps = _splitBsProps[1];
+
+    var classes = (0, _extends3.default)({}, (0, _bootstrapUtils.getClassSet)(bsProps), {
+      'pull-right': pullRight,
+
+      // Hack for collapsing on IE8.
+      hidden: !this.hasContent(children)
+    });
+
+    return _react2.default.createElement(
+      'span',
+      (0, _extends3.default)({}, elementProps, {
+        className: (0, _classnames2.default)(className, classes)
+      }),
+      children
+    );
+  };
+
+  return Badge;
+}(_react2.default.Component);
+
+Badge.propTypes = propTypes;
+Badge.defaultProps = defaultProps;
+
+exports.default = (0, _bootstrapUtils.bsClass)('badge', Badge);
+module.exports = exports['default'];
 
 /***/ })
 /******/ ]);

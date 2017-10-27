@@ -7,6 +7,7 @@ import React from 'react';
 import {render} from 'react-dom';
 import Bookslist from "./components/booksList.js"
 import {Provider} from "react-redux"
+import Menu from "./components/menu.js"
 //3rd define reducer in reducers folder
 //1st create stpre
 const store = createStore(reducers);
@@ -15,7 +16,10 @@ store.subscribe(function(){
 })
 render(
   <Provider store={store}>
-    <Bookslist />
+    <div>
+      <Menu/>
+      <Bookslist />
+    </div>
   </Provider>, document.getElementById('app')
 
 )
