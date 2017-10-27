@@ -32,7 +32,9 @@ class BooksForm extends React.Component{
 
     const bookList = this.props.books.map(function(booksArr){
       return(
+        // <option key={booksArr._id} value={booksArr.title}>{booksArr.title}</option>
         <option key={booksArr._id} value={booksArr._id}>{booksArr.title}</option>
+
       )
     })
 

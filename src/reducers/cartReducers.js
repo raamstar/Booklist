@@ -41,6 +41,5 @@ export function totals(payloadArr){
   }).reduce(function(a,b){
     return a+b
   },0); // Start summing from index 0;
-  console.log();
   return {amount: totalAmount.toFixed(2)}
 }

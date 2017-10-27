@@ -33,14 +33,11 @@ class Cart extends React.Component{
       const currentBooktoDelete= this.props.cart;
       const indexToDelete = currentBooktoDelete.findIndex(
         function(cart){
-          console.log('cart_id',cart._id);
-          console.log('_id',_id);
           return cart._id === _id;
         }
       )
       let cartAfterDelete = [...currentBooktoDelete.slice(0,indexToDelete),
       ...currentBooktoDelete.slice(indexToDelete +1)]
-      console.log("after",cartAfterDelete);
 
     this.props.deleteCartItem(cartAfterDelete);
   }

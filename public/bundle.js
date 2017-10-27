@@ -12011,6 +12011,7 @@ function booksReducers() {
       var currentBooktoDelete = [].concat(_toConsumableArray(state.books));
       var indexToDelete = currentBooktoDelete.findIndex(function (book) {
         return book._id == action.payload;
+        // return book.title== action.payload;
       });
       return { books: [].concat(_toConsumableArray(currentBooktoDelete.slice(0, indexToDelete)), _toConsumableArray(currentBooktoDelete.slice(indexToDelete + 1))) };
       break;
@@ -12091,7 +12092,6 @@ function totals(payloadArr) {
   }).reduce(function (a, b) {
     return a + b;
   }, 0); // Start summing from index 0;
-  console.log();
   return { amount: totalAmount.toFixed(2) };
 }
 
@@ -31231,10 +31231,13 @@ var BooksForm = function (_React$Component) {
     value: function render() {
 
       var bookList = this.props.books.map(function (booksArr) {
-        return _react2.default.createElement(
-          'option',
-          { key: booksArr._id, value: booksArr._id },
-          booksArr.title
+        return (
+          // <option key={booksArr._id} value={booksArr.title}>{booksArr.title}</option>
+          _react2.default.createElement(
+            'option',
+            { key: booksArr._id, value: booksArr._id },
+            booksArr.title
+          )
         );
       });
 
@@ -32875,12 +32878,9 @@ var Cart = function (_React$Component) {
       // create copy of current cart
       var currentBooktoDelete = this.props.cart;
       var indexToDelete = currentBooktoDelete.findIndex(function (cart) {
-        console.log('cart_id', cart._id);
-        console.log('_id', _id);
         return cart._id === _id;
       });
       var cartAfterDelete = [].concat(_toConsumableArray(currentBooktoDelete.slice(0, indexToDelete)), _toConsumableArray(currentBooktoDelete.slice(indexToDelete + 1)));
-      console.log("after", cartAfterDelete);
 
       this.props.deleteCartItem(cartAfterDelete);
     }
