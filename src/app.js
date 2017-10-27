@@ -2,6 +2,7 @@ import {createStore} from 'redux'
 import reducers from './reducers/index'
 import {addToCart} from './actions/cartActions'
 import ReactDOM from 'react-dom';
+import {BrowserRouter, Route, Switch} from 'react-router-dom'
 import {postBooks, deleteBooks, updateBooks} from './actions/booksActions'
 import React from 'react';
 import {render} from 'react-dom';
@@ -16,10 +17,13 @@ store.subscribe(function(){
 })
 render(
   <Provider store={store}>
-    <div>
-      <Menu/>
-      <Bookslist />
-    </div>
+    <BrowserRouter>
+      <Menu>
+        <Switch>
+          <Route exact path="/" component={Bookslist} />
+        </Switch>
+      </Menu>
+    </BrowserRouter>
   </Provider>, document.getElementById('app')
 
 )

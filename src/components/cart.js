@@ -124,6 +124,7 @@ function mapStateToProps(state){
   return{
     cart: state.cart.cart,
     totalAmount: state.cart.totalAmount
+
   }
 }
 function mapDispatchToProps(dispatch){

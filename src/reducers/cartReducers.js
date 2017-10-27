@@ -3,12 +3,17 @@ export function cartReducers(state={cart:[]}, action){
     case "ADD_TO_CART":
     return {...state,
       cart:action.payload,
-      totalAmount: totals(action.payload).amount
+      totalAmount: totals(action.payload).amount,
+      totalQTY: totalItem(action.payload).quantity
     }
     break;
 
     case "DELETE_CART_ITEM":
-    return {...state, cart:action.payload, totalAmount: totals(action.payload).amount
+    return {...state,
+      cart:action.payload,
+      totalAmount: totals(action.payload).amount,
+      totalQTY: totalItem(action.payload).quantity
+
 }
     break;
 
@@ -26,7 +31,11 @@ export function cartReducers(state={cart:[]}, action){
     let cartUpdate=[...currentBookToUpdate.slice(0,indexToUpdate),newBookToUpdate,
       ...currentBookToUpdate.slice(indexToUpdate +1)]
 
-    return {...state, cart:cartUpdate, totalAmount: totals(cartUpdate).amount
+    return {...state,
+      cart:cartUpdate,
+      totalAmount: totals(cartUpdate).amount,
+      totalQTY: totalItem(cartUpdate).quantity
+
 }
     break;
   }
@@ -42,4 +51,13 @@ export function totals(payloadArr){
     return a+b
   },0); // Start summing from index 0;
   return {amount: totalAmount.toFixed(2)}
+}
+
+export function totalItem(payloadArr){
+  const totalQTY = payloadArr.map(function(cartArr){
+    return cartArr.quantity
+  }).reduce(function(a,b){
+    return a+b
+  },0);
+  return ({quantity: totalQTY})
 }
