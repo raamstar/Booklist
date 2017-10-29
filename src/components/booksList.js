@@ -8,7 +8,6 @@ import Col from 'react-bootstrap/lib/Col';
 import {getBooks} from '../actions/booksActions';
 import BookItems from './bookItems';
 import BooksForm from './booksForm';
-import Cart from "./cart"
 
 class Bookslist extends React.Component{
 
@@ -31,7 +30,6 @@ class Bookslist extends React.Component{
     })
     return (
       <Grid>
-        <Row><Cart/></Row>
         <Row>
           <Col xs={12} sm={6} md={4}>
             <BooksForm/>
@@ -53,4 +51,4 @@ function mapDispatchToProps(dispatch){
     //OtherActions: xxxx
   }, dispatch)
 }
-export default connect(mapStateToProps, mapDispatchToProps)(Bookslist)
+export default connect(mapStateToProps, mapDispatchToProps,null, {pure:false})(Bookslist)

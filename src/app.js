@@ -8,7 +8,9 @@ import React from 'react';
 import {render} from 'react-dom';
 import Bookslist from "./components/booksList.js"
 import {Provider} from "react-redux"
-import Menu from "./components/menu.js"
+import Baselayout from "./components/baselayout.js"
+import Contact from "./components/contact.js"
+import Cart from "./components/cart.js"
 //3rd define reducer in reducers folder
 //1st create stpre
 const store = createStore(reducers);
@@ -16,45 +18,15 @@ store.subscribe(function(){
   console.log('current state is ', store.getState());
 })
 render(
+<BrowserRouter>
   <Provider store={store}>
-    <BrowserRouter>
-      <Menu>
+      <Baselayout>
         <Switch>
           <Route exact path="/" component={Bookslist} />
+          <Route exact path="/contact" component={Contact} />
+          <Route path ="/cart" component={Cart}/>
         </Switch>
-      </Menu>
-    </BrowserRouter>
-  </Provider>, document.getElementById('app')
-
-)
-
-//2nd create dispatch action
-// store.dispatch(postBooks(
-//   [{
-//     id:1,
-//     title: "First Book",
-//     description: "2nd edition",
-//     price: "22$"
-//   },
-//   {
-//     id:2,
-//     title:"second Book",
-//     description: "3rd edition",
-//     price:"24$"
-//   }]
-// ))
-// store.dispatch(deleteBooks(
-//   {
-//     id:1
-//   }
-// ))
-// store.dispatch(updateBooks(
-//   {
-//     id:2,
-//     title: 'Learn React in 24h'
-//   }
-// ))
-/////////
-//cart///
-/////////
-// store.dispatch(addToCart([{id:1}]))
+      </Baselayout>
+  </Provider>
+</BrowserRouter>
+  , document.getElementById('app'))

@@ -53,7 +53,17 @@ class Cart extends React.Component{
 
 
   emptyCart(){
-    return (<div></div>)
+    return (
+      <Panel header='CART' bsStyle="primary">
+        <Row>
+          <Col xs={12}>
+            <h6>Your Shopping Cart is Empty.</h6>
+          </Col>
+        </Row>
+      </Panel>
+
+
+    )
   }
   IncreQuantity(_id){
     this.props.updateCartQuantity(_id, 1)
@@ -92,7 +102,7 @@ class Cart extends React.Component{
       )
     }, this)
     return(
-      <Panel header='Cart' bsStyle="primary">
+      <Panel header='CART' bsStyle="primary">
         {cartItemsList}
         <Row>
           <Col xs={12}>
