@@ -9049,8 +9049,15 @@ var _axios2 = _interopRequireDefault(_axios);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function getBooks() {
-  return {
-    type: "GET_BOOKS"
+  // return {
+  //   type:"GET_BOOKS"
+  // }
+  return function (dispatch) {
+    _axios2.default.get("/books").then(function (response) {
+      dispatch({ type: "GET_BOOKS", payload: response.data });
+    }).catch(function (err) {
+      dispatch({ type: "GET_BOOKS_REJECTED", payload: "There was an error" });
+    });
   };
 }
 
@@ -9072,10 +9079,17 @@ function postBooks(book) {
 
 //DELETE_BOOK
 function deleteBooks(id) {
-  return {
-    type: "DELETE_BOOK",
-    payload: id
+  return function (dispatch) {
+    _axios2.default.delete("/books/" + id).then(function (response) {
+      dispatch({ type: "DELETE_BOOK", payload: response.data });
+    }).catch(function (err) {
+      dispatch({ type: "DELETE_BOOK_REJECTED", payload: "There was an error." });
+    });
   };
+  // return {
+  //   type:"DELETE_BOOK",
+  //   payload: id
+  // }
 }
 
 //UPDATE_BOOK
@@ -31021,23 +31035,13 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 function booksReducers() {
   var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
-    books: [{
-      _id: 1,
-      title: "First Book",
-      description: "2nd edition",
-      price: "22"
-    }, {
-      _id: 2,
-      title: "second Book",
-      description: "3rd edition",
-      price: "24"
-    }] };
+    books: [] };
   var action = arguments[1];
 
   switch (action.type) {
 
     case "GET_BOOKS":
-      return _extends({}, state, { books: [].concat(_toConsumableArray(state.books)) });
+      return _extends({}, state, { books: [].concat(_toConsumableArray(action.payload)) });
       break;
 
     case "POST_BOOK":
@@ -35658,7 +35662,9 @@ var BooksForm = function (_React$Component) {
     key: 'deleteBooks',
     value: function deleteBooks() {
       var bookID = (0, _reactDom.findDOMNode)(this.refs.delete).value;
-      this.props.deleteBooks(parseInt(bookID));
+      console.log(bookID);
+      this.props.deleteBooks(bookID);
+      this.props.getBooks();
     }
   }, {
     key: 'render',
@@ -35766,6 +35772,7 @@ function mapStateToProps(state) {
 }
 function mapDispatchToProps(dispatch) {
   return (0, _redux.bindActionCreators)({
+    getBooks: _booksActions.getBooks,
     postBooks: _booksActions.postBooks,
     deleteBooks: _booksActions.deleteBooks
   }, dispatch);

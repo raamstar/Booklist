@@ -7,7 +7,7 @@ import Well from 'react-bootstrap/lib/Well';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {postBooks, deleteBooks} from '../actions/booksActions';
+import {postBooks, deleteBooks, getBooks} from '../actions/booksActions';
 import {findDOMNode} from 'react-dom'
 
 
@@ -26,7 +26,9 @@ class BooksForm extends React.Component{
   }
   deleteBooks(){
     let bookID= findDOMNode(this.refs.delete).value;
-    this.props.deleteBooks(parseInt(bookID))
+    console.log(bookID);
+    this.props.deleteBooks(bookID)
+    this.props.getBooks();
   }
   render(){
 
@@ -86,6 +88,7 @@ function mapStateToProps(state){
 function mapDispatchToProps(dispatch){
   return bindActionCreators(
     {
+      getBooks,
       postBooks,
       deleteBooks
     },dispatch)
