@@ -66,11 +66,11 @@ class Cart extends React.Component{
     )
   }
   IncreQuantity(_id){
-    this.props.updateCartQuantity(_id, 1)
+    this.props.updateCartQuantity(_id, 1, this.props.cart)
   }
   DecreQuantity(_id, quantity){
     if (quantity>1){
-      this.props.updateCartQuantity(_id, -1)
+      this.props.updateCartQuantity(_id, -1, this.props.cart)
     }
   }
 

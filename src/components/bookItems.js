@@ -32,7 +32,7 @@ class bookItem extends React.Component{
       if (cart_index === -1){
         this.props.addToCart(book)
       }else{
-        this.props.updateCartQuantity(_id, 1)
+        this.props.updateCartQuantity(_id, 1,this.props.cart)
         ///add +1 quantity if item already in the cart.
       }
     }
