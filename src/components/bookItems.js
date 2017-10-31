@@ -4,6 +4,8 @@ import Grid from 'react-bootstrap/lib/Grid';
 import Row from 'react-bootstrap/lib/Row';
 import Col from 'react-bootstrap/lib/Col';
 import Well from 'react-bootstrap/lib/Well';
+import Image from 'react-bootstrap/lib/Image'
+
 import {connect} from 'react-redux';
 import {addToCart} from '../actions/cartActions';
 import {bindActionCreators} from 'redux';
@@ -46,11 +48,14 @@ class bookItem extends React.Component{
     return(
       <Well>
         <Row>
+          <Col xs={6} md={4}>
+            <Image src={this.props.image}  width="200px" />
+          </Col>
           <Col xs={12}>
             <h2>{this.props.title}</h2>
             <h3>{this.props.description}</h3>
             <h3>USD:{this.props.price}$</h3>
-            <Button onClick={this.handleCart.bind(this)} bsStyle='primary'>Buy Now</Button>
+            <Button style={{"textAlign": "center"}} onClick={this.handleCart.bind(this)} bsStyle='primary'>Buy Now</Button>
           </Col>
         </Row>
       </Well>

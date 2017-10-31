@@ -32,6 +32,9 @@ class Menu extends React.Component{
             </Nav>
             <Nav pullRight>
               <NavItem>
+                <NavLink exact to ="/admin">Admin</NavLink>
+              </NavItem>
+              <NavItem>
                 <NavLink to ="/cart">Your Cart&nbsp;&nbsp;
                   { (this.props.totalQTY > 0) ? (<Badge className="badge">{this.props.totalQTY}</Badge>):('')}
                 </NavLink>

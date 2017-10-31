@@ -17,12 +17,21 @@ class BooksForm extends React.Component{
     this.handleSubmit = this.handleSubmit.bind(this);
   }
   handleSubmit(){
-    const books=[{
-      title:findDOMNode(this.refs.title).value,
-      description:findDOMNode(this.refs.description).value,
-      price:findDOMNode(this.refs.price).value
-    }]
-    this.props.postBooks(books)
+    if ((findDOMNode(this.refs.title).value=="")||
+    (findDOMNode(this.refs.description).value=="")||
+    (findDOMNode(this.refs.price).value=="")){
+      alert("There was an error while posting")
+
+    }else{
+      const books=[{
+        title:findDOMNode(this.refs.title).value,
+        description:findDOMNode(this.refs.description).value,
+        price:findDOMNode(this.refs.price).value,
+        image: findDOMNode(this.refs.image).value
+      }]
+      this.props.postBooks(books)
+    }
+
   }
   deleteBooks(){
     let bookID= findDOMNode(this.refs.delete).value;
@@ -42,25 +51,31 @@ class BooksForm extends React.Component{
 
     return(
       <Well>
-        <Panel>
+        <Panel header='* (required)'>
           <FormGroup controlId="title">
-            <ControlLabel>Title</ControlLabel>
+            <ControlLabel>Title *</ControlLabel>
             <FormControl type="text"
                         placeholder="Enter Title"
                         ref="title"
                       />
           </FormGroup>
           <FormGroup controlId="description">
-            <ControlLabel>Description</ControlLabel>
+            <ControlLabel>Description *</ControlLabel>
             <FormControl type="text"
                         placeholder="Enter Description"
                         ref="description"/>
           </FormGroup>
           <FormGroup controlId="price">
-            <ControlLabel>Price</ControlLabel>
+            <ControlLabel>Price *</ControlLabel>
             <FormControl type="text"
                         placeholder="Enter Price"
                         ref="price"/>
+          </FormGroup>
+          <FormGroup controlId="Image URL">
+            <ControlLabel>Image</ControlLabel>
+            <FormControl type="text"
+                        placeholder="Enter URL"
+                        ref="image"/>
           </FormGroup>
           <Button bsStyle="primary" onClick={this.handleSubmit}>Save Book</Button>
         </Panel>

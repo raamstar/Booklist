@@ -9,7 +9,7 @@ import Label from 'react-bootstrap/lib/Label'
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup'
 import Modal from 'react-bootstrap/lib/Modal'
 import {bindActionCreators} from 'redux';
-import {deleteCartItem, updateCartQuantity } from "../actions/cartActions"
+import {deleteCartItem, updateCartQuantity, getCart } from "../actions/cartActions"
 
 class Cart extends React.Component{
   constructor(){
@@ -17,6 +17,10 @@ class Cart extends React.Component{
     this.state={
       showModal:false
     }
+  }
+
+  componentDidMount(){
+    this.props.getCart()
   }
 
   close(){
@@ -140,7 +144,8 @@ function mapStateToProps(state){
 function mapDispatchToProps(dispatch){
   return bindActionCreators({
     deleteCartItem:deleteCartItem,
-    updateCartQuantity:updateCartQuantity
+    updateCartQuantity:updateCartQuantity,
+    getCart: getCart
     //OtherActions: xxxx
   }, dispatch)
 }

@@ -6,14 +6,16 @@ import Grid from 'react-bootstrap/lib/Grid';
 import Row from 'react-bootstrap/lib/Row';
 import Col from 'react-bootstrap/lib/Col';
 import {getBooks} from '../actions/booksActions';
+import {getCart} from "../actions/cartActions";
 import BookItems from './bookItems';
-import BooksForm from './booksForm';
+// import BooksForm from './booksForm';
 
 class Bookslist extends React.Component{
 
   componentDidMount(){
     //dispatch getbooks
     this.props.getBooks();
+    this.props.getCart();
   }
 
   render(){
@@ -24,16 +26,18 @@ class Bookslist extends React.Component{
             _id={BookArr._id}
             title={BookArr.title}
             description={BookArr.description}
-            price={BookArr.price}/>
+            price={BookArr.price}
+            image={BookArr.image}
+          />
         </Col>
       )
     })
     return (
       <Grid>
         <Row>
-          <Col xs={12} sm={6} md={4}>
+          {/* <Col xs={12} sm={6} md={4}>
             <BooksForm/>
-          </Col>
+          </Col> */}
           {booklist}
         </Row>
       </Grid>
@@ -47,7 +51,8 @@ function mapStateToProps(state){
 }
 function mapDispatchToProps(dispatch){
   return bindActionCreators({
-    getBooks: getBooks
+    getBooks: getBooks,
+    getCart:getCart
     //OtherActions: xxxx
   }, dispatch)
 }

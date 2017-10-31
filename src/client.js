@@ -20,6 +20,7 @@ import Bookslist from "./components/booksList.js"
 import Baselayout from "./components/baselayout.js"
 import Contact from "./components/contact.js"
 import Cart from "./components/cart.js"
+import Admin from "./components/admin.js"
 
 // const middleware= applyMiddleware( thunkMiddleware , logger());
 const store = createStore(reducers, applyMiddleware(thunk));
@@ -34,6 +35,7 @@ render(
           <Route exact path="/" component={Bookslist} />
           <Route exact path="/contact" component={Contact} />
           <Route path ="/cart" component={Cart}/>
+          <Route path = "/admin" component={Admin} />
         </Switch>
       </Baselayout>
   </Provider>

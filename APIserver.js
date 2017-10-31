@@ -1,14 +1,16 @@
-var express = require('express');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+const express = require('express');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 
 // var index = require('./routes/index');
 // var users = require('./routes/users');
 const Books =require("./models/books.js")
 
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 
 
-var app = express();
+const app = express();
 
 // view engine setup
 // app.set('views', path.join(__dirname, 'views'));
@@ -24,6 +26,35 @@ app.use(cookieParser());
 //----->APIS
 const mongoose = require("mongoose");
 mongoose.connect("mongodb://0.0.0.0:27017/Booklist")
+let db=mongoose.connection
+
+//---->
+app.use(session({
+  secret: 'TeachMeAndILearn',
+  saveUninitialized: false,
+  resave: false, //don't save session if unmodified
+  cookie: {maxAge: 1000 * 60 * 60 * 24 * 2},
+  store: new MongoStore({
+    mongooseConnection: db,
+    touchAfter: 24 * 3600 // time period in seconds
+  })
+}))
+//-->save session cart API
+app.post("/cart", function(req,res){
+  var cart = req.body;
+  req.session.cart = cart;
+  req.session.save(function(err){
+    if (err){
+      throw err;
+    }
+    res.json(req.session.cart)
+  })
+})
+app.get("/cart",function(req,res){
+  if (typeof req.session.cart !== 'undefined'){
+    res.json(req.session.cart);
+  }
+})
 
 
 app.post("/books", function(req,res){
