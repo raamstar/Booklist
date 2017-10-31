@@ -1,11 +1,11 @@
 body{
-  margin-top:60px;
+  margin-top:40px;
   margin-bottom: 50px;
 }
 .container{
   width:auto;
-  max-width:900px;
-  padding-right: 50px;
+  /*max-width:900px;*/
+  /*padding-right: 50px;*/
 }
 
 .container .footer-text{

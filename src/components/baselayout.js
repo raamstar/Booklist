@@ -27,11 +27,11 @@ class Menu extends React.Component{
                 <NavLink exact to ="/">Home</NavLink>
               </NavItem>
               <NavItem>
-                <NavLink to ="/contact">Contact</NavLink>
+                <NavLink to ="/about">About</NavLink>
               </NavItem>
             </Nav>
             <Nav pullRight>
-              <NavItem>
+              <NavItem >
                 <NavLink exact to ="/admin">Admin</NavLink>
               </NavItem>
               <NavItem>

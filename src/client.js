@@ -18,7 +18,7 @@ import logger from "redux-logger"
 
 import Bookslist from "./components/booksList.js"
 import Baselayout from "./components/baselayout.js"
-import Contact from "./components/contact.js"
+import About from "./components/about.js"
 import Cart from "./components/cart.js"
 import Admin from "./components/admin.js"
 
@@ -33,7 +33,7 @@ render(
       <Baselayout>
         <Switch>
           <Route exact path="/" component={Bookslist} />
-          <Route exact path="/contact" component={Contact} />
+          <Route exact path="/about" component={About} />
           <Route path ="/cart" component={Cart}/>
           <Route path = "/admin" component={Admin} />
         </Switch>

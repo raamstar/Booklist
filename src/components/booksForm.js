@@ -35,7 +35,6 @@ class BooksForm extends React.Component{
   }
   deleteBooks(){
     let bookID= findDOMNode(this.refs.delete).value;
-    console.log(bookID);
     this.props.deleteBooks(bookID)
     this.props.getBooks();
   }
@@ -77,7 +76,11 @@ class BooksForm extends React.Component{
                         placeholder="Enter URL"
                         ref="image"/>
           </FormGroup>
-          <Button bsStyle="primary" onClick={this.handleSubmit}>Save Book</Button>
+          <Button
+            bsStyle={(!this.props.style)?("primary"):(this.props.style)}
+            onClick={this.handleSubmit}>
+            {(!this.props.msg)?("Save Book"):(this.props.msg)}
+          </Button>
         </Panel>
         <Panel style={{marginTop:'25px'}}>
           <FormGroup controlId="formControlsSelect">
@@ -97,7 +100,10 @@ class BooksForm extends React.Component{
 }
 function mapStateToProps(state){
   return {
-    books: state.books.books
+    books: state.books.books,
+    msg:state.books.msg,
+    style:state.books.style
+
   }
 }
 function mapDispatchToProps(dispatch){

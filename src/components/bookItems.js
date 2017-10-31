@@ -53,8 +53,8 @@ class bookItem extends React.Component{
           </Col>
           <Col xs={12}>
             <h2>{this.props.title}</h2>
-            <h3>{this.props.description}</h3>
-            <h3>USD:{this.props.price}$</h3>
+            <h4>{this.props.description}</h4>
+            <h4>USD:{this.props.price}$</h4>
             <Button style={{"textAlign": "center"}} onClick={this.handleCart.bind(this)} bsStyle='primary'>Buy Now</Button>
           </Col>
         </Row>
