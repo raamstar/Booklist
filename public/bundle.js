@@ -61240,8 +61240,11 @@ var BooksForm = function (_React$Component) {
     key: 'deleteBooks',
     value: function deleteBooks() {
       var bookID = (0, _reactDom.findDOMNode)(this.refs.delete).value;
-      this.props.deleteBooks(bookID);
-      this.props.getBooks();
+      var r = confirm("Are you sure ?");
+      if (r == true) {
+        this.props.deleteBooks(bookID);
+        this.props.getBooks();
+      }
     }
   }, {
     key: 'render',
