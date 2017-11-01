@@ -4,13 +4,15 @@
 <br>
 <p>User can upload their favorite books that will be saved in the database, because this is just an example webpage for educational purpose, any users can delete the books in the database</p>
 <br>
+<p>Libraries/Technologies I used include: React.js Redux React-Router Node.js Express Mongodb(I used mlab as my cloud database service), HTML, CSS, Javascript, Bootstrap </p>
+<br>
 <hr>
 <h3>To Install</h3>
 <br>
 <ol>
   <li>git clone https://github.com/ronaldhong/Booklist.git</li>
   <li>go to folder directory and enter "npm install" in Command</li>
-  <li>enter "npm start" in command line<li>
+  <li>enter "npm start" in command line</li>
   <li>go to http://localhost:3000/</li>
 </ol>
 <br>
