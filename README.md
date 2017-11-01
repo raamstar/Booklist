@@ -2,7 +2,7 @@
 <hr>
 <p>Booklist is a mock-up example of a bookstore I made to showcase my understanding in React.js, Single-Page-Application(SPA), and Redux for state manipulation.</p>
 <br>
-<p>User can upload their favorite books that will be saved in the database, because this is just an example webpage for educational purpose, any users can delete the books in the database</p>
+<p>User can upload their favorite books that will be saved in the database, because this is just an example webpage for educational purpose, any users can delete the books from the database.</p>
 <br>
 <p>Libraries/Technologies I used include: React.js Redux React-Router Node.js Express Mongodb(I used mlab as my cloud database service), HTML, CSS, Javascript, Bootstrap </p>
 <br>
