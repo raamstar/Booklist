@@ -9,7 +9,7 @@ export function booksReducers(state={
 
     case "POST_BOOK":
     // let books=state.books.concat(action.payload)
-      return {...state,books:[...state.books, ...action.payload], msg:"Saved! Click to Continue.", style:"success"}
+      return {...state,books:[...state.books, ...action.payload], msg:"Saved!", style:"success"}
       break;
 
     case "POST_BOOK_REJECTED":

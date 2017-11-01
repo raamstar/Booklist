@@ -5,6 +5,7 @@ import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
 import Navbar from 'react-bootstrap/lib/Navbar';
 import Badge from 'react-bootstrap/lib/badge';
+import Row from 'react-bootstrap/lib/Row'
 import { withRouter } from 'react-router';
 
 
@@ -45,6 +46,11 @@ class Menu extends React.Component{
         <div>
           {this.props.children}
         </div>
+        <footer>
+          <Row>
+            <p>&copy; 2017 Ronald Hong </p>
+          </Row>
+        </footer>
       </div>
     )
   }

@@ -24,9 +24,9 @@ import Admin from "./components/admin.js"
 
 // const middleware= applyMiddleware( thunkMiddleware , logger());
 const store = createStore(reducers, applyMiddleware(thunk));
-store.subscribe(function(){
-  console.log('current state is ', store.getState());
-})
+// store.subscribe(function(){
+//   console.log('current state is ', store.getState());
+// })
 render(
 <BrowserRouter>
   <Provider store={store}>

@@ -9,13 +9,7 @@ class Admin extends React.Component{
   render(){
     return(
         <Grid>
-          <Col>
-            <Row>
-              <Col xs={12} sm={6} md={4}>
                 <BooksForm/>
-              </Col>
-            </Row>
-          </Col>
         </Grid>
     );
   }

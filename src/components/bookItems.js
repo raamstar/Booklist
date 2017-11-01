@@ -13,12 +13,25 @@ import {updateCartQuantity} from "../actions/cartActions"
 
 
 class bookItem extends React.Component{
+  constructor(){
+    super();
+    this.state={
+      isClicked:false
+    };
+  }
+
+  onReadMore(){
+    this.setState({
+      isClicked:true
+    })
+  }
 
   handleCart(){
     const book=[...this.props.cart,{
       _id: this.props._id,
       title: this.props.title,
       description: this.props.description,
+      author: this.props.author,
       price: this.props.price,
       quantity: 1
     }]
@@ -46,16 +59,22 @@ class bookItem extends React.Component{
 
   render(){
     return(
-      <Well>
+      <Well style={{backgroundColor:"#161416", border:"none"}}>
         <Row>
           <Col xs={6} md={4}>
-            <Image src={this.props.image}  width="200px" />
+            <Image src={this.props.image}  width="250px" height="350px" />
           </Col>
           <Col xs={12}>
-            <h2>{this.props.title}</h2>
-            <h4>{this.props.description}</h4>
-            <h4>USD:{this.props.price}$</h4>
-            <Button style={{"textAlign": "center"}} onClick={this.handleCart.bind(this)} bsStyle='primary'>Buy Now</Button>
+            <h2 style={{color:'white'}}>{this.props.title}</h2>
+            <h4 style={{color:'white'}}><small>by</small> {this.props.author}</h4>
+            <h4 style={{color:"#727073"}}>
+              {(this.props.description.length>50 && this.state.isClicked===false)?(this.props.description.substring(0,100)):(this.props.description)}
+              <button className="description_button" onClick={this.onReadMore.bind(this)}>
+                {(this.state.isClicked===false && this.props.description !== null && this.props.description.length>50)?("...read more"):("")}
+              </button>
+            </h4>
+            <h4 style={{color:'white'}}>USD:{this.props.price}$</h4>
+            <Button onClick={this.handleCart.bind(this)} bsStyle='primary'>Buy Now</Button>
           </Col>
         </Row>
       </Well>

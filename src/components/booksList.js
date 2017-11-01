@@ -23,7 +23,7 @@ class Bookslist extends React.Component {
     const booklist = this.props.books.map(function(BookArr) {
       return (
         <Col xs={12} sm={6} md={4} key={BookArr._id}>
-          <BookItems _id={BookArr._id} title={BookArr.title} description={BookArr.description} price={BookArr.price} image={BookArr.image}/>
+          <BookItems _id={BookArr._id} title={BookArr.title} description={BookArr.description} price={BookArr.price} image={BookArr.image} author={BookArr.author}/>
         </Col>
       )
     })
@@ -31,36 +31,33 @@ class Bookslist extends React.Component {
       <Grid>
         <Row>
           <Carousel
-            // style={{height:'450px'}}
             >
-            <Carousel.Item>
+            <Carousel.Item
+              >
               <img
-                // width={"100%"}
-                height={250}
-                alt="900x300" src="http://www.cmis-int.org/wp-content/uploads/2014/10/documentos2.jpg"/>
+                style={{minHeight:'250px'}}
+                alt="1300x400" src="https://mistressofspiceandeverythingnicee.files.wordpress.com/2017/05/20150903173413-books-shop-fair-library-used-bookshelf-literature-study-textbooks.jpeg?w=1300&h=400&crop=1"/>
               <Carousel.Caption>
-                <h3>Writing a book of poetry is like dropping a rose petal down the Grand Canyon and waiting for the echo.</h3>
-                <p>-Don Marquis</p>
+                <h3 id="carousel_caption">Writing a book of poetry is like dropping a rose petal down the Grand Canyon and waiting for the echo.</h3>
+                <p id="carousel_caption">-Don Marquis</p>
               </Carousel.Caption>
             </Carousel.Item>
             <Carousel.Item>
               <img
-                // width={1200}
-                // height={450}
-                alt="900x300" src="http://companies.naukri.com/depusa-careers/wp-content/uploads/sites/7784/2016/09/b5.jpg"/>
+                style={{minHeight:'250px'}}
+                alt="1300x400" src="https://i.imgur.com/y6PGWWb.jpg"/>
               <Carousel.Caption>
-                <h3>A book is a gift you can open again and again.</h3>
-                <p>-Garrison Keillor</p>
+                <h3 id="carousel_caption">A book is a gift you can open again and again.</h3>
+                <p id="carousel_caption">-Garrison Keillor</p>
               </Carousel.Caption>
             </Carousel.Item>
             <Carousel.Item>
               <img
-                // width={1200}
-                // height={450}
-                alt="900x300" src="http://www.einformr.com/images/book.jpg"/>
+                style={{minHeight:'250px'}}
+                alt="1300x400" src="http://assets.signature-reads.com/wp-content/uploads/2016/03/kids-reading-shutterstock.jpg"/>
               <Carousel.Caption>
-                <h3>Whenever you read a good book, somewhere in the world a door opens to allow in more light.</h3>
-                <p>-Vera Nazarian</p>
+                <h3 id="carousel_caption">Whenever you read a good book, somewhere in the world a door opens to allow in more light.</h3>
+                <p id="carousel_caption">-Vera Nazarian</p>
               </Carousel.Caption>
             </Carousel.Item>
           </Carousel>
