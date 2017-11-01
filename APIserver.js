@@ -81,7 +81,7 @@ app.delete("/books/:_id", function(req,res){
   let book_select = {_id: req.params._id};
   Books.remove(book_select, function(err, books){
     if (err){
-      throw err;
+      console.log("#API delete books", err);
     }
     res.json(books)
   })

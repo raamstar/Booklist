@@ -38,9 +38,12 @@ code{
   margin:0;
   padding: 3;
 }
-
-@media only screen and (max-device-width:1056px) {
+.about{
+  text-align: center;
+  margin: 50px auto;
+}
+/*@media only screen and (max-device-width:1056px) {
   .carousel-caption h3{
     font-size: 10px;
   }
-}
+}*/

@@ -68,7 +68,7 @@ class BooksForm extends React.Component{
     return(
       <Row>
         <Col xs={12} sm={6} md={4}>
-          <Well>
+          <Well style={{'margin':'30px'}}>
             <Panel header=' Post a Book  (* required)'>
               <FormGroup controlId="title">
                 <ControlLabel>Title *</ControlLabel>
@@ -87,7 +87,7 @@ class BooksForm extends React.Component{
                 <FormControl type="text" placeholder="Enter Price" ref="price"/>
               </FormGroup>
               <FormGroup controlId="Image URL">
-                <ControlLabel>Image</ControlLabel>
+                <ControlLabel>Image (.png, .jpg, .svg)</ControlLabel>
                 <FormControl type="text" placeholder="Enter URL" ref="image" onChange={this.imageLink.bind(this)} />
               </FormGroup>
               <Button bsStyle={(!this.props.style)?("primary"):(this.props.style)} onClick={this.handleSubmit}> {(!this.props.msg)?("Save Book"):(this.props.msg)} </Button>
@@ -105,7 +105,7 @@ class BooksForm extends React.Component{
             </Panel>
           </Well>
         </Col>
-        <Col xs={12} sm={6} md={4}>
+        <Col xs={12} sm={6} md={4} style={{margin:'30px'}}>
           <img src={this.state.imageURL}  height="500px" />
         </Col>
       </Row>
